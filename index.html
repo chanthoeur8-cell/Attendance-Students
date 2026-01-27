@@ -1,244 +1,222 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIKIDS Attendance System v4.1</title>
+    <title>MIKIDS Attendance Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Kantumruy Pro', sans-serif; }
+        body { font-family: 'Inter', 'Kantumruy Pro', sans-serif; background-color: #f1f5f9; }
+        .active-class { background-color: #1e40af !important; color: white !important; border-left: 5px solid #fbbf24 !important; }
+        /* បន្ថែមពណ៌ពេលចុចលើជម្រើសនីមួយៗ */
+        .radio-p:checked + span { color: #10b981; font-weight: bold; } /* មក - ពណ៌បៃតង */
+        .radio-l:checked + span { color: #f59e0b; font-weight: bold; } /* ច្បាប់ - ពណ៌ទឹកក្រូច */
+        .radio-a:checked + span { color: #ef4444; font-weight: bold; } /* ឈប់ - ពណ៌ក្រហម */
         @media print { .no-print { display: none; } }
-        .active-class { background-color: #dbeafe; border-left: 4px solid #1e40af; color: #1e40af; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body>
 
-    <header class="bg-blue-900 text-white p-4 no-print shadow-md">
-        <div class="max-w-7xl mx-auto flex justify-between items-center px-4">
-            <div class="flex items-center gap-4">
-                <div class="bg-white p-2 rounded-lg">
-                    <span class="text-blue-900 font-bold text-xl uppercase">Mikids</span>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold italic">សាលាអន្តរជាតិម៉ាយឃីដ</h1>
-                    <p class="text-xs opacity-80 uppercase tracking-widest text-[9px]">Attendance System</p>
-                </div>
+    <nav class="bg-blue-900 text-white p-4 sticky top-0 z-50 shadow-md no-print">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-yellow-400 text-blue-900 font-black px-2 py-1 rounded">MIKIDS</div>
+                <h1 class="font-bold text-lg tracking-tight">Attendance System</h1>
             </div>
-            
-            <div class="flex items-center gap-2 bg-blue-800 p-2 rounded-xl border border-blue-700">
-                <select id="select-month" onchange="loadClass(selectedIndex)" class="bg-transparent text-white text-sm font-bold outline-none cursor-pointer">
-                    <option value="មករា" class="text-black">មករា</option>
-                    <option value="កុម្ភៈ" class="text-black">កុម្ភៈ</option>
-                    <option value="មីនា" class="text-black">មីនា</option>
-                    <option value="មេសា" class="text-black">មេសា</option>
-                    <option value="ឧសភា" class="text-black">ឧសភា</option>
-                    <option value="មិថុនា" class="text-black">មិថុនា</option>
-                    <option value="កក្កដា" class="text-black">កក្កដា</option>
-                    <option value="សីហា" class="text-black">សីហា</option>
-                    <option value="កញ្ញា" class="text-black">កញ្ញា</option>
-                    <option value="តុលា" class="text-black">តុលា</option>
-                    <option value="វិច្ឆិកា" class="text-black">វិច្ឆិកា</option>
-                    <option value="ធ្នូ" class="text-black">ធ្នូ</option>
+            <div class="flex gap-2">
+                <select id="sel-month" onchange="refreshTable()" class="bg-blue-800 text-xs border-none rounded px-2 outline-none cursor-pointer">
+                    <option value="January">January</option><option value="February">February</option>
+                    <option value="March">March</option><option value="April">April</option>
+                    <option value="May">May</option><option value="June">June</option>
+                    <option value="July">July</option><option value="August">August</option>
+                    <option value="September">September</option><option value="October">October</option>
+                    <option value="November">November</option><option value="December">December</option>
                 </select>
-
-                <select id="select-year" onchange="loadClass(selectedIndex)" class="bg-transparent text-white text-sm font-bold outline-none cursor-pointer">
-                    <option value="២០២៤" class="text-black">២០២៤</option>
-                    <option value="២០២៥" class="text-black">២០២៥</option>
-                    <option value="២០២៦" class="text-black" selected>២០២៦</option>
-                    <option value="២០២៧" class="text-black">២០២៧</option>
-                    <option value="២០២៨" class="text-black">២០២៨</option>
-                    <option value="២០២៩" class="text-black">២០២៩</option>
-                    <option value="២០៣០" class="text-black">២០៣០</option>
+                <select id="sel-year" onchange="refreshTable()" class="bg-blue-800 text-xs border-none rounded px-2 outline-none cursor-pointer">
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
                 </select>
+                <button onclick="saveLocal()" class="bg-emerald-500 hover:bg-emerald-600 px-4 py-1.5 rounded text-xs font-bold transition">Save Data</button>
+                <button onclick="sendToTelegram()" class="bg-sky-500 hover:bg-sky-600 px-4 py-1.5 rounded text-xs font-bold transition">Send Telegram</button>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <div class="flex h-[calc(100vh-85px)]">
-        <aside class="w-80 bg-white border-r overflow-y-auto p-4 no-print shadow-sm">
-            <div class="mb-6 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                <label class="block text-[10px] font-bold text-blue-800 uppercase mb-2 italic">Telegram Bot Setup</label>
-                <input id="tg-token" type="password" value="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw" class="w-full text-[10px] p-2 border rounded mb-2 outline-none" placeholder="Bot Token">
-                <input id="tg-chatid" type="text" value="-1005090259958" class="w-full text-[10px] p-2 border rounded outline-none" placeholder="Chat ID (e.g. -100...)">
-                <p class="text-[9px] text-gray-500 mt-2 italic">* ប្រាកដថា Bot របស់អ្នកត្រូវបានបញ្ចូលក្នុង Group រួចហើយ។</p>
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-6 p-6">
+        
+        <aside class="w-full md:w-80 bg-white rounded-xl shadow-sm border border-slate-200 p-4 h-[85vh] overflow-y-auto no-print">
+            <h2 class="text-slate-400 text-[10px] font-bold uppercase mb-4 tracking-widest italic">បញ្ជីថ្នាក់រៀន / Classes</h2>
+            <div id="class-list" class="flex flex-col gap-1"></div>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <label class="text-[9px] font-bold text-blue-600 uppercase">Telegram Config</label>
+                <input id="tg-id" type="text" value="-1005090259958" class="w-full text-xs p-2 border rounded mt-1 mb-2 outline-none focus:ring-1 ring-blue-300">
+                <input id="tg-token" type="password" value="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw" class="w-full text-xs p-2 border rounded outline-none focus:ring-1 ring-blue-300">
             </div>
-
-            <h3 class="text-gray-400 font-bold mb-3 px-2 text-[10px] uppercase tracking-widest italic">Select class</h3>
-            <div id="class-menu" class="space-y-1 pb-10"></div>
         </aside>
 
-        <main class="flex-1 overflow-auto p-8">
-            <div class="max-w-5xl mx-auto">
-                <div class="flex justify-between items-center mb-8 no-print">
-                    <div>
-                        <h2 id="current-class-title" class="text-3xl font-bold text-gray-800 italic uppercase">...</h2>
-                        <p id="attendance-period" class="text-blue-600 font-medium mt-1 font-mono"></p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button onclick="saveToBrowser()" class="bg-amber-500 text-white px-5 py-2.5 rounded-xl shadow-lg hover:bg-amber-600 font-bold transition flex items-center gap-2">
-                            <span>💾</span> រក្សាទុក (Save)
-                        </button>
-                        <button onclick="sendToTelegram()" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-lg hover:bg-blue-700 font-bold transition flex items-center gap-2">
-                            <span>✈️</span> ផ្ញើទៅ Telegram
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="bg-gray-50 border-b border-gray-100 uppercase text-[11px] tracking-wider text-gray-400">
-                                <th class="p-4 w-16 text-center">ល.រ</th>
-                                <th class="p-4 w-28">អត្តលេខ</th>
-                                <th class="p-4">គោត្តនាម & នាម</th>
-                                <th class="p-4 w-20 text-center">ភេទ</th>
-                                <th class="p-4 text-center font-bold text-blue-900 bg-blue-50/50">ស្ថានភាពវត្តមាន</th>
-                            </tr>
-                        </thead>
-                        <tbody id="student-rows" class="divide-y divide-gray-50"></tbody>
-                    </table>
+        <main class="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50/50">
+                <div>
+                    <h2 id="display-class-name" class="text-2xl font-bold text-slate-800">Select class</h2>
+                    <p id="display-date" class="text-slate-500 text-sm font-medium"></p>
                 </div>
             </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-100/50 text-slate-500 text-[10px] font-bold uppercase border-b">
+                            <th class="p-4 w-12 text-center">No.</th>
+                            <th class="p-4 w-20">ID</th>
+                            <th class="p-4">Student Name</th>
+                            <th class="p-4 w-16 text-center">Sex</th>
+                            <th class="p-4 text-center">Status (P / L / A)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                </table>
+            </div>
+            <div id="empty-msg" class="p-20 text-center text-slate-300 font-medium italic">Please select a class from the sidebar.</div>
         </main>
     </div>
 
     <script>
-        const schoolData = [
-            { className: "ថ្នាក់មត្តេយ្យទាប", students: [{id:"147", n:"សុភក្រ វីរបុត្រ", g:"ប"},{id:"166", n:"លីណា រ័ត្នហុងស័ក្កិអធិភូ", g:"ប"},{id:"160", n:"ថូ សិទ្ធីយូណា", g:"ស"},{id:"175", n:"ហេង ជ័រម៉ីង", g:"ស"},{id:"---", n:"វ៉េត នីរីតា", g:"ស"}]},
-            { className: "មត្តេយ្យមធ្យម", students: [{id:"64", n:"ឃុន ទេពង្ស", g:"ប"},{id:"121", n:"នឿន វឌ្ឍនា", g:"ប"},{id:"128", n:"ពិសិទ្អ ច័ន្ទវឌ្ឃ", g:"ប"},{id:"141", n:"ហេង សាជីង", g:"ស"},{id:"132", n:"សុបញ្ញា មុនិរាជ", g:"ប"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"ប"},{id:"173", n:"សាន្ត លីប៉េង", g:"ប"},{id:"163", n:"អេង លីឆេង", g:"ប"},{id:"179", n:"ចន្ថា វឌ្ឍនា", g:"ប"},{id:"162", n:"យ៉ាន់ សុខឡេង", g:"ប"}]},
-            { className: "មត្តេយ្យមធ្យម (១)", students: [{id:"139", n:"ហ៊ឺម ម៉ីអ៊ិ", g:"ប"},{id:"146", n:"លន វេស្សភូ", g:"ប"},{id:"102", n:"សំណាង វីរៈបុត្រ", g:"ប"},{id:"181", n:"ឈន ចេស្ដា", g:"ប"},{id:"87", n:"អ៊ុំ រតនាសិទ្ធីការ", g:"ស"},{id:"113", n:"ស៊ីម សិទ្ធីការ", g:"ស"},{id:"164", n:"អ៊ូសុវណ្ណ វេហា៍", g:"ប"},{id:"177", n:"វាសនា ពេជ្រសុម៉ាលី", g:"ស"},{id:"165", n:"លឹម លីម៉េងគ័ង្គ", g:"ប"}]},
-            { className: "មត្តេយ្យខ្ពស់ (១)", students: [{id:"29", n:"ខាន់ មុនីវល្លភា", g:"ស"},{id:"101", n:"ឈុំ វីរ់សិទ្ធ", g:"ប"},{id:"65", n:"និត សុធារ៉ា", g:"ប"},{id:"78", n:"នី លីជីង", g:"ស"},{id:"117", n:"ហ៊ុន រាណ្ណជេណស្ដា", g:"ប"},{id:"47", n:"បុណ្ណជេ ជេននី", g:"ស"},{id:"14", n:"ឃុន ទេពី", g:"ស"},{id:"62", n:"រិទ្ធី ពិស្សុតសុក្រឹត", g:"ប"},{id:"49", n:"ងិន ទៀនវិន", g:"ប"},{id:"107", n:"សុភក្រ័ វរៈសិទ្ធ", g:"ប"},{id:"170", n:"អុលវឿន ដាវីន", g:"ស"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"ស"},{id:"1", n:"ប៊ុនរីន ខេមរា", g:"ប"}]},
-            { className: "មត្តេយ្យខ្ពស់ (២)", students: [{id:"54", n:"យន់ លីហេង", g:"ប"},{id:"75", n:"វិន បញ្ញាវ័ន្ត", g:"ប"},{id:"90", n:"សូ រស្មីពនិតា", g:"ស"},{id:"50", n:"សូយ រក្សា", g:"ប"},{id:"0072", n:"អ៊ូ សុខអាមី", g:"ស"},{id:"176", n:"ប៉ឹម ម៉ីជូ", g:"ស"},{id:"85", n:"សេរី ចន្ទវឌ្ឍនា", g:"ប"},{id:"161", n:"លីម ហ៊ីប៉", g:"ប"},{id:"55", n:"អ៊ា ជីងហ័រ", g:"ស"},{id:"0079", n:"មិត្ត ម៉េងហេង", g:"ប"},{id:"74", n:"ចាន់នី ស៊ូសាន់ណា", g:"ស"}]},
-            { className: "ថ្នាក់ទី១", students: [{id:"75", n:"ឆន វិរៈសិទ្ធ", g:"ប"},{id:"47", n:"ជាឡិច កូលីន", g:"ប"},{id:"92", n:"សុបញ្ញា សោម៉ា", g:"ស"},{id:"83", n:"ភឺន ថិរាយុ", g:"ប"},{id:"69", n:"លី ឆាយឈ័ន", g:"ប"},{id:"77", n:"វុឌ្ឍី ដាវីកា", g:"ស"},{id:"93", n:"អ៊ឹម រោចនា", g:"ស"},{id:"72", n:"វង្ស ដារ៉ាវីន", g:"ប"},{id:"95", n:"ចាវ វិនហាវ", g:"ប"},{id:"80", n:"ងួន បញ្ញាពុទ្ធិស័ក្តិ", g:"ប"}]},
-            { className: "ថ្នាក់ទី១ (១)", students: [{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"ប"},{id:"91", n:"ប៊ូ សាធុការ", g:"ស"},{id:"82", n:"សេន យ៉ាស្មីនណា", g:"ស"},{id:"85", n:"ដន សុភ័ណ្ឌម៉ូនីកា", g:"ស"},{id:"78", n:"ស៊្រាង សៀវហ្វុង", g:"ស"},{id:"73", n:"ហេង ម៉ីអ៊ិ", g:"ស"},{id:"74", n:"អឿន ពៅវល័ក្ខ", g:"ស"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"ប"}]},
-            { className: "ថ្នាក់ទី២", students: [{id:"21", n:"ចន្ថា លីតា", g:"ស"},{id:"20", n:"ពៅ សុខចិន", g:"ប"},{id:"17", n:"ណារ៉ា ហេងលី", g:"ប"},{id:"23", n:"សុខ សម្បត្តិ", g:"ប"},{id:"22", n:"សុខ ដាលីស", g:"ស"},{id:"29", n:"ស្រស់ រីហ្សា", g:"ស"},{id:"41", n:"ប៉ុន រីយ៉ា", g:"ស"}]},
-            { className: "ថ្នាក់ទី២ (១)", students: [{id:"59", n:"អុង បញ្ញារ័ត្ន", g:"ប"},{id:"31", n:"មិត្ត ម៉េងហួរ", g:"ប"},{id:"14", n:"យស់ នរិន្ទ", g:"ប"},{id:"33", n:"វង់ ពុទ្ធិតា", g:"ស"},{id:"62", n:"សូយ បញ្ញា", g:"ប"},{id:"40", n:"សេង សាណា", g:"ស"},{id:"39", n:"ចន្ទ សុផាយ៉ាមេឃ", g:"ប"},{id:"30", n:"ស៊នវីរៈ បញ្ញាទេពី", g:"ស"},{id:"27", n:"ប៊ូ តាម៉ា", g:"ប"},{id:"65", n:"កែវ មុន្នីឧត្តម", g:"ប"},{id:"56", n:"វន្តវិន ថាណា", g:"ស"},{id:"36", n:"ហាន ស៊ីវហ័រ", g:"ស"}]},
-            { className: "ថ្នាក់ទី៣", students: [{id:"9", n:"កែវ វីនសុឧត្តតារា", g:"ស"},{id:"28", n:"ឈុនតា រតនៈខុនដូ", g:"ស"},{id:"10", n:"យ៉ា ពេជ្រម៉ូនីកា", g:"ស"},{id:"15", n:"លីម ពុទ្ធិរាជ", g:"ប"},{id:"3", n:"ឡ ស៊ីវហ៊ួយ", g:"ស"},{id:"2", n:"ឡាយ មុនិចិន្ដា", g:"ស"},{id:"24", n:"អោក និសិ្សត", g:"ប"},{id:"44", n:"ចំរើន ម៉ានីតា", g:"ស"}]},
-            { className: "ថ្នាក់ទី៤-៥", students: [{id:"1", n:"ឡាយ ភារ៉ាដាវីឌ", g:"ប"},{id:"42", n:"វង្ស មុនីកញ្ចនា", g:"ស"},{id:"43", n:"ពៅ សុនីតា", g:"ស"},{id:"4", n:"ឡ សុវណ្ណហាន់ណា", g:"ស"}]},
-            { className: "Fount 1 (ព្រឹក)", students: [{id:"---", n:"ឆាង ស៊ីងអាយ", g:"ស"},{id:"---", n:"ស៊ីម សិទ្ធិកា", g:"ស"},{id:"82", n:"រុន រស្មី", g:"ប"},{id:"149", n:"ធីសុវណ្ណ សិទ្ធិកា", g:"ស"},{id:"143", n:"ផន សុខហៀង", g:"ប"},{id:"133", n:"សុទ្ធ លីនប្រុសសិទ្ធ", g:"ប"}]},
-            { className: "Fount 1 (ល្ងាច)", students: [{id:"---", n:"អ៊ុំ រតនាសិទ្ធិការ្យ", g:"ស"},{id:"---", n:"ងិន ទៀនវិន", g:"ប"},{id:"116", n:"ឆន ម៉េងស៊ីន", g:"ប"},{id:"58", n:"ងួន គីមហាប់", g:"ប"},{id:"145", n:"ឆាយ ភីងអ៊ីង", g:"ស"},{id:"125", n:"បញ្ញា ភេត្រា", g:"ស"},{id:"90", n:"ចំរើន រឿនរឹទ្ធិរាជ", g:"ប"}]},
-            { className: "Fount 2", students: [{id:"86", n:"ធេង ម៉េងលី", g:"ប"},{id:"---", n:"ស៊្រាង សៀវហ្វុង", g:"ស"},{id:"---", n:"ហេង ម៉ីអ៊ិ", g:"ស"},{id:"---", n:"អឿន ពៅវល័ក្ខ", g:"ស"},{id:"---", n:"ហាន ស៊ីវហ័រ", g:"ស"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"ប"}]},
-            { className: "Level 1", students: [{id:"---", n:"អោក ឧត្តម", g:"ប"},{id:"---", n:"ណារ៉ា ហេងឡាយ", g:"ប"},{id:"62", n:"ឈូក ឈិនឡុង", g:"ប"},{id:"---", n:"ពៅ សុនីតា", g:"ស"}]},
-            { className: "Nursery", students: [{id:"148", n:"បេរ៉េស ម៉ៃឃើស", g:"ប"},{id:"144", n:"ហេង សន្តិភាព", g:"ប"},{id:"157", n:"ដួង សុមេធា", g:"ប"},{id:"183", n:"ថុង ហ្វុងម៉េង", g:"ប"}]},
-            { className: "Level 2", students: [{id:"48", n:"សុភក្ដិ ទិត្រដាណា", g:"ស"},{id:"63", n:"នឿន វឌ្ឍនះ", g:"ប"},{id:"49", n:"សុភក្ដិ រតន", g:"ប"},{id:"61", n:"ផល សុវណ្ណ", g:"ប"}]}
+        const allData = [
+            { className: "Nursery", students: [{id:"148", n:"បេរ៉េស ម៉ៃឃើស", g:"M"},{id:"144", n:"ហេង សន្តិភាព", g:"M"},{id:"157", n:"ដួង សុមេធា", g:"M"},{id:"183", n:"ថុង ហ្វុងម៉េង", g:"M"},{id:"158", n:"ពន្លក វិរសិទ្ធ", g:"M"},{id:"172", n:"រតនា សៀវលិ", g:"F"},{id:"180", n:"រ៉ាត់ ពេជ្រមរកត", g:"F"},{id:"178", n:"លីវទ្ធី ជុតិមា", g:"F"},{id:"184", n:"ហូ លីភីង", g:"-"},{id:"174", n:"វិច្ឆិកា មុន្នីទេពី", g:"F"},{id:"185", n:"យឹម ពុទ្ធិវង្ស", g:"M"},{id:"171", n:"សុង សិរីបុត្រ", g:"M"},{id:"147", n:"សុភ័ក្រ វីរបុត្រ", g:"M"},{id:"150", n:"វ៉េត នីរីតា", g:"F"},{id:"166", n:"លីណា ហុងស័ក្កិអធិភូ", g:"M"}] },
+            { className: "មត្តេយ្យទាប", students: [{id:"147", n:"សុភក្រ​​ វីរបុត្រ", g:"M"},{id:"166", n:"លីណា រ័ត្នហុងស័ក្កិអធិភូ", g:"M"},{id:"160", n:"ថូ សិទ្ធីយូណា", g:"F"},{id:"175", n:"ហេង ជ័រម៉ីង", g:"F"},{id:"-", n:"វ៉េត នីរីតា", g:"F"}] },
+            { className: "មត្តេយ្យកណ្តាល ១", students: [{id:"64", n:"ឃុន ទេពង្ស", g:"M"},{id:"121", n:"នឿន វឌ្ឍនា", g:"M"},{id:"128", n:"ពិសិទ្អ ច័ន្ទវឌ្ឃ", g:"M"},{id:"141", n:"ហេង សាជីង", g:"F"},{id:"132", n:"សុ បញ្ញា មុនិរាជ", g:"M"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"M"},{id:"173", n:"សាន្ត លីប៉េង", g:"M"},{id:"163", n:"អេង លីឆេង", g:"M"},{id:"179", n:"ចន្ថា វឌ្ឍនា", g:"M"},{id:"162", n:"យ៉ាន់ សុខឡេង", g:"M"}] },
+            { className: "មត្តេយ្យកណ្តាល ២", students: [{id:"139", n:"ហ៊ឺម ម៉ីអ៊ិ", g:"M"},{id:"146", n:"លន វេស្សភូ", g:"M"},{id:"102", n:"សំណាង វីរៈបុត្រ", g:"M"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"M"},{id:"181", n:"ឈន ចេស្ដា", g:"M"},{id:"87", n:"អ៊ុំ រតនាសិទ្ធីការ", g:"F"},{id:"113", n:"ស៊ីម សិទ្ធីការ", g:"F"},{id:"164", n:"អ៊ូសុវណ្ណ វេហា៍", g:"M"},{id:"177", n:"វាសនា ពេជ្រសុម៉ាលី", g:"F"},{id:"165", n:"លឹម លីម៉េងគ័ង្គ", g:"M"}] },
+            { className: "មត្តេយ្យខ្ពស់ ១", students: [{id:"29", n:"ខាន់ មុនីវល្លភា", g:"F"},{id:"101", n:"ឈុំ វីរ់សិទ្ធ", g:"M"},{id:"65", n:"និត សុធារ៉ា", g:"M"},{id:"78", n:"នី លីជីង", g:"F"},{id:"117", n:"ហ៊ុន រាណ្ណជេណស្ដា", g:"M"},{id:"47", n:"បុណ្ណជេ ជេននី", g:"F"},{id:"14", n:"ឃុន ទេពី", g:"F"},{id:"62", n:"រិទ្ធី ពិស្សុតសុក្រឹត", g:"M"},{id:"49", n:"ងិន ទៀនវិន", g:"M"},{id:"107", n:"សុភក្រ័ វរៈសិទ្ធ", g:"M"},{id:"170", n:"អុលវឿន ដាវីន", g:"F"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"F"},{id:"1", n:"ប៊ុនរីន ខេមរា", g:"M"}] },
+            { className: "មត្តេយ្យខ្ពស់ ២", students: [{id:"54", n:"យន់ លីហេង", g:"M"},{id:"75", n:"វិន បញ្ញាវ័ន្ត", g:"M"},{id:"90", n:"សូ រស្មីពនិតា", g:"F"},{id:"50", n:"សូយ រក្សា", g:"M"},{id:"0072", n:"អ៊ូ សុខអាមី", g:"F"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"F"},{id:"176", n:"ប៉ឹម ម៉ីជូ", g:"F"},{id:"85", n:"សេរី ចន្ទវឌ្ឍនា", g:"M"},{id:"161", n:"លីម ហ៊ីប៉", g:"M"},{id:"55", n:"អ៊ា ជីងហ័រ", g:"F"},{id:"0079", n:"មិត្ត ម៉េងហេង", g:"M"},{id:"74", n:"ចាន់នី ស៊ូសាន់ណា", g:"F"}] },
+            { className: "ថ្នាក់ទី ១ (ព្រឹក)", students: [{id:"75", n:"ឆន វិរៈសិទ្ធ", g:"M"},{id:"47", n:"ជាឡិច កូលីន", g:"M"},{id:"92", n:"សុបញ្ញា សោម៉ា", g:"F"},{id:"83", n:"ភឺន ថិរាយុ", g:"M"},{id:"69", n:"លី ឆាយឈ័ន", g:"M"},{id:"77", n:"វុឌ្ឍី ដាវីកា", g:"F"},{id:"93", n:"អ៊ឹម រោចនា", g:"F"},{id:"72", n:"វង្ស ដារ៉ាវីន", g:"M"},{id:"95", n:"ចាវ វិនហាវ", g:"M"},{id:"80", n:"ងួន បញ្ញាពុទ្ធិស័ក្តិ", g:"M"}] },
+            { className: "ថ្នាក់ទី ១ (ល្ងាច)", students: [{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"M"},{id:"91", n:"ប៊ូ សាធុការ", g:"F"},{id:"82", n:"សេន យ៉ាស្មីនណា", g:"F"},{id:"85", n:"ដន សុភ័ណ្ឌម៉ូនីកា", g:"F"},{id:"78", n:"ស៊្រាង សៀវហ្វុង", g:"F"},{id:"73", n:"ហេង ម៉ីអ៊ិ", g:"F"},{id:"74", n:"អឿន ពៅវល័ក្ខ", g:"F"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"M"}] },
+            { className: "ថ្នាក់ទី ២ (ក)", students: [{id:"21", n:"ចន្ថា លីតា", g:"F"},{id:"20", n:"ពៅ សុខចិន", g:"M"},{id:"17", n:"ណារ៉ា ហេងលី", g:"M"},{id:"23", n:"សុខ សម្បត្តិ", g:"M"},{id:"22", n:"សុខ ដាលីស", g:"F"},{id:"29", n:"ស្រស់ រីហ្សា", g:"F"},{id:"41", n:"ប៉ុន រីយ៉ា", g:"F"}] },
+            { className: "ថ្នាក់ទី ២ (ខ)", students: [{id:"59", n:"អុង បញ្ញារ័ត្ន", g:"M"},{id:"31", n:"មិត្ត ម៉េងហួរ", g:"M"},{id:"14", n:"យស់ នរិន្ទ", g:"M"},{id:"33", n:"វង់ ពុទ្ធិតា", g:"F"},{id:"62", n:"សូយ បញ្ញា", g:"M"},{id:"40", n:"សេង សាណា", g:"F"},{id:"39", n:"ចន្ទ សុផាយ៉ាមេឃ", g:"M"},{id:"30", n:"ស៊នវីរៈ បញ្ញាទេពី", g:"F"},{id:"27", n:"ប៊ូ តាម៉ា", g:"M"},{id:"65", n:"កែវ មុន្នីឧត្តម", g:"M"},{id:"56", n:"វន្តវិន ថាណា", g:"F"},{id:"36", n:"ហាន ស៊ីវហ័រ", g:"F"}] },
+            { className: "ថ្នាក់ទី ៣", students: [{id:"9", n:"កែវ វីនសុឧត្តតារា", g:"F"},{id:"28", n:"ឈុនតា រតនៈខុនដូ", g:"F"},{id:"10", n:"យ៉ា ពេជ្រម៉ូនីកា", g:"F"},{id:"15", n:"លីម ពុទ្ធិរាជ", g:"M"},{id:"3", n:"ឡ ស៊ីវហ៊ួយ", g:"F"},{id:"2", n:"ឡាយ មុនិចិន្ដា", g:"F"},{id:"24", n:"អោក និសិ្សត", g:"M"},{id:"44", n:"ចំរើន ម៉ានីតា", g:"F"}] },
+            { className: "ថ្នាក់ទី ៤-៥", students: [{id:"1", n:"ឡាយ ភារ៉ាដាវីឌ", g:"M"},{id:"42", n:"វង្ស មុនីកញ្ចនា", g:"F"},{id:"43", n:"ពៅ សុនីតា", g:"F"},{id:"4", n:"ឡ សុវណ្ណហាន់ណា", g:"F"}] },
+            { className: "Foundation 1 (AM)", students: [{id:"-", n:"ឆាង ស៊ីងអាយ", g:"F"},{id:"-", n:"ស៊ីម សិទ្ធិកា", g:"F"},{id:"82", n:"រុន រស្មី", g:"M"},{id:"149", n:"ធី សុវណ្ណ សិទ្ធិកា", g:"F"},{id:"143", n:"ផន សុខហៀង", g:"M"},{id:"133", n:"សុទ្ធ លីនប្រុសសិទ្ធ", g:"M"},{id:"134", n:"អ៊ាប លីយីង", g:"F"},{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"M"},{id:"127", n:"ហម ចាន់បុរីរក្ស", g:"M"},{id:"182", n:"តាំង ហ៊ួយលីន", g:"F"}] },
+            { className: "Foundation 1 (PM)", students: [{id:"116", n:"ឆន ម៉េងស៊ីន", g:"M"},{id:"58", n:"ងួន គីមហាប់", g:"M"},{id:"145", n:"ឆាយ ភីងអ៊ីង", g:"F"},{id:"125", n:"បញ្ញា ភេត្រា", g:"F"},{id:"90", n:"ចំរើន រឿនរឹទ្ធិរាជ", g:"M"},{id:"159", n:"ថន ស៊ីហ្គ្សិច", g:"F"}] },
+            { className: "Foundation 2 (A)", students: [{id:"86", n:"ធេង ម៉េងលី", g:"M"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"M"}] },
+            { className: "Foundation 2 (Narein)", students: [{id:"68", n:"សុង រឹទ្ធស័ក្ក", g:"M"},{id:"66", n:"ប៊ុនឡេង អ៊ៃដឹក", g:"M"},{id:"67", n:"ភោគ ស្ពីតឌី", g:"M"}] },
+            { className: "Level 1 (SreyNet)", students: [{id:"62", n:"ឈូក ឈិនឡុង", g:"M"},{id:"64", n:"លាង វឌ្ឃនធនុ", g:"M"}] },
+            { className: "Level 2 (SreyNet)", students: [{id:"48", n:"សុភក្ដិ ទិត្រដាណា", g:"F"},{id:"63", n:"នឿន វឌ្ឍនះ", g:"M"},{id:"49", n:"សុភក្ដិ រតន", g:"M"},{id:"61", n:"ផល សុវណ្ណ", g:"M"},{id:"53", n:"ហុង សិទ្ធិណាល់", g:"M"},{id:"55", n:"ធេង ជូលីញ", g:"F"},{id:"1", n:"ឡាយ ភារ៉ាដាវីឌ", g:"M"},{id:"4", n:"ឡ សុវណ្ណហាន់ណា", g:"F"}] }
         ];
 
-        let selectedIndex = 0;
+        let currentIdx = -1;
 
         function init() {
-            const menu = document.getElementById('class-menu');
-            schoolData.forEach((c, i) => {
+            const list = document.getElementById('class-list');
+            allData.forEach((c, i) => {
                 const btn = document.createElement('button');
-                btn.id = `btn-class-${i}`;
-                btn.className = "w-full text-left p-3.5 rounded-xl hover:bg-gray-100 transition text-sm font-bold text-gray-700 flex justify-between items-center px-4 border-b border-gray-50";
-                btn.innerHTML = `<span>${c.className}</span> <span class="text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">${c.students.length}</span>`;
-                btn.onclick = () => loadClass(i);
-                menu.appendChild(btn);
+                btn.className = "text-left px-3 py-2 rounded text-[13px] font-semibold hover:bg-slate-50 transition-all flex justify-between";
+                btn.innerHTML = `<span>${c.className}</span> <span class="text-slate-400 text-[10px]">${c.students.length}</span>`;
+                btn.onclick = () => {
+                    currentIdx = i;
+                    document.querySelectorAll('#class-list button').forEach(b => b.classList.remove('active-class'));
+                    btn.classList.add('active-class');
+                    refreshTable();
+                };
+                list.appendChild(btn);
             });
-            loadClass(0);
         }
 
-        function loadClass(i) {
-            selectedIndex = i;
-            const data = schoolData[i];
-            const month = document.getElementById('select-month').value;
-            const year = document.getElementById('select-year').value;
-
-            document.querySelectorAll('#class-menu button').forEach(b => b.classList.remove('active-class', 'bg-blue-50'));
-            document.getElementById(`btn-class-${i}`).classList.add('active-class', 'bg-blue-50');
-
-            document.getElementById('current-class-title').innerText = "ថ្នាក់ " + data.className;
-            document.getElementById('attendance-period').innerText = `ខែ: ${month} ឆ្នាំ: ${year}`;
+        function refreshTable() {
+            if (currentIdx === -1) return;
+            document.getElementById('empty-msg').style.display = 'none';
+            const data = allData[currentIdx];
+            const month = document.getElementById('sel-month').value;
+            const year = document.getElementById('sel-year').value;
+            document.getElementById('display-class-name').innerText = data.className;
+            document.getElementById('display-date').innerText = `Attendance Period: ${month} ${year}`;
             
-            const storageKey = `MIKIDS_${data.className}_${month}_${year}`;
-            const savedData = JSON.parse(localStorage.getItem(storageKey)) || {};
+            const storageKey = `mikids_db_${data.className}_${month}_${year}`;
+            const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
 
-            const tbody = document.getElementById('student-rows');
+            const tbody = document.getElementById('student-table-body');
             tbody.innerHTML = '';
-
-            data.students.forEach((s, idx) => {
-                const status = savedData[s.n] || 'P';
+            
+            data.students.forEach((s, i) => {
+                const status = saved[s.n] || 'P'; // Default is 'P' (Present)
                 tbody.innerHTML += `
-                    <tr>
-                        <td class="p-4 text-center text-gray-300 font-mono text-xs">${idx + 1}</td>
-                        <td class="p-4 font-bold text-blue-600 font-mono text-xs">${s.id}</td>
-                        <td class="p-4 font-bold text-gray-800">${s.n}</td>
-                        <td class="p-4 text-center text-gray-500">${s.g}</td>
-                        <td class="p-4 bg-blue-50/30">
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-4 text-center text-slate-400 font-mono text-[10px]">${i+1}</td>
+                        <td class="p-4 font-bold text-blue-800 text-xs">${s.id}</td>
+                        <td class="p-4 font-semibold text-slate-700">${s.n}</td>
+                        <td class="p-4 text-center text-xs font-bold">${s.g}</td>
+                        <td class="p-4">
                             <div class="flex justify-center gap-6">
-                                <label class="flex items-center gap-1.5 cursor-pointer text-xs"><input type="radio" name="st-${idx}" value="P" ${status === 'P' ? 'checked' : ''} class="accent-green-600"> មក(Come)</label>
-                                <label class="flex items-center gap-1.5 cursor-pointer text-xs text-orange-500"><input type="radio" name="st-${idx}" value="L" ${status === 'L' ? 'checked' : ''} class="accent-orange-500"> ច្បាប់(Permission)</label>
-                                <label class="flex items-center gap-1.5 cursor-pointer text-xs text-red-600 font-bold"><input type="radio" name="st-${idx}" value="A" ${status === 'A' ? 'checked' : ''} class="accent-red-600"> ឈប់(Absent)</label>
+                                <label class="flex items-center gap-1.5 cursor-pointer group">
+                                    <input type="radio" name="s-${i}" value="P" ${status==='P'?'checked':''} class="radio-p w-4 h-4 accent-emerald-500"> 
+                                    <span class="text-[11px] group-hover:text-emerald-500">មក (✅)</span>
+                                </label>
+                                <label class="flex items-center gap-1.5 cursor-pointer group">
+                                    <input type="radio" name="s-${i}" value="L" ${status==='L'?'checked':''} class="radio-l w-4 h-4 accent-amber-500"> 
+                                    <span class="text-[11px] group-hover:text-amber-500">ច្បាប់ (P)</span>
+                                </label>
+                                <label class="flex items-center gap-1.5 cursor-pointer group">
+                                    <input type="radio" name="s-${i}" value="A" ${status==='A'?'checked':''} class="radio-a w-4 h-4 accent-red-500"> 
+                                    <span class="text-[11px] group-hover:text-red-500">ឈប់ (A)</span>
+                                </label>
                             </div>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
             });
         }
 
-        function saveToBrowser() {
-            const data = schoolData[selectedIndex];
-            const month = document.getElementById('select-month').value;
-            const year = document.getElementById('select-year').value;
-            const storageKey = `MIKIDS_${data.className}_${month}_${year}`;
-
-            let attendanceToSave = {};
-            document.querySelectorAll('#student-rows tr').forEach((row, idx) => {
-                const radio = row.querySelector(`input[name="st-${idx}"]:checked`);
-                if (radio) attendanceToSave[data.students[idx].n] = radio.value;
+        function saveLocal() {
+            if (currentIdx === -1) return alert("Select a class!");
+            const data = allData[currentIdx];
+            const month = document.getElementById('sel-month').value;
+            const year = document.getElementById('sel-year').value;
+            const key = `mikids_db_${data.className}_${month}_${year}`;
+            
+            let obj = {};
+            data.students.forEach((s, i) => {
+                const radioValue = document.querySelector(`input[name="s-${i}"]:checked`).value;
+                obj[s.n] = radioValue;
             });
-
-            localStorage.setItem(storageKey, JSON.stringify(attendanceToSave));
-            alert(`✅ រក្សាទុកជោគជ័យសម្រាប់ ${data.className} (${month}-${year})`);
+            
+            localStorage.setItem(key, JSON.stringify(obj));
+            alert(`✅ Recorded! ${data.className} for ${month} saved.`);
         }
 
         async function sendToTelegram() {
-            const token = document.getElementById('tg-token').value.trim();
-            const chatId = document.getElementById('tg-chatid').value.trim();
-            const month = document.getElementById('select-month').value;
-            const year = document.getElementById('select-year').value;
-            const data = schoolData[selectedIndex];
-            
-            if (!token || !chatId) {
-                alert("❌ សូមបំពេញ Bot Token និង Chat ID!"); return;
-            }
+            if (currentIdx === -1) return alert("Select a class!");
+            const token = document.getElementById('tg-token').value;
+            const cid = document.getElementById('tg-id').value;
+            const data = allData[currentIdx];
+            const month = document.getElementById('sel-month').value;
+            const year = document.getElementById('sel-year').value;
 
-            let absents = [];
-            document.querySelectorAll('#student-rows tr').forEach((row, idx) => {
-                if(row.querySelector(`input[name="st-${idx}"]:checked`).value === 'A') {
-                    absents.push(data.students[idx].n);
-                }
+            let abs = [], lvs = [], pCount = 0;
+            data.students.forEach((s, i) => {
+                const val = document.querySelector(`input[name="s-${i}"]:checked`).value;
+                if(val === 'P') pCount++;
+                else if(val === 'L') lvs.push(s.n);
+                else abs.push(s.n);
             });
 
-            let msg = `📢 *MIKIDS ABSENT REPORT*\n🏫 ថ្នាក់: *${data.className}*\n📅 ខែ: *${month} ${year}*\n`;
-            msg += `--------------------------\n`;
-            msg += absents.length > 0 ? `❌ សិស្សអវត្តមាន (${absents.length} នាក់):\n` + absents.map((n, i) => `${i+1}. ${n}`).join('\n') : `✅ សិស្សមកគ្រប់គ្នា!`;
+            let msg = `📊 *ATTENDANCE REPORT*\n🏫 ថ្នាក់៖ *${data.className}*\n📅 ខែ៖ *${month} ${year}*\n`;
+            msg += `━━━━━━━━━━━━━━━\n✅ វត្តមាន (P)៖ ${pCount}\n🟠 ច្បាប់ (L)៖ ${lvs.length}\n🔴 អវត្តមាន (A)៖ ${abs.length}\n`;
+            
+            if(abs.length > 0) msg += `\n❌ *ឈ្មោះសិស្សអវត្តមាន៖*\n${abs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
+            if(lvs.length > 0) msg += `\n\n📝 *ឈ្មោះសិស្សសុំច្បាប់៖*\n${lvs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
 
             try {
-                const url = `https://api.telegram.org/bot${token}/sendMessage`;
-                const response = await fetch(url, {
+                const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'Markdown' })
+                    body: JSON.stringify({chat_id: cid, text: msg, parse_mode: 'Markdown'})
                 });
-
-                const resData = await response.json();
-                if(resData.ok) {
-                    alert("✈️ របាយការណ៍ត្រូវបានផ្ញើទៅ Telegram រួចរាល់!");
-                } else {
-                    // បង្ហាញកំហុសដែលមកពី Telegram (ដូចជារូបភាពទី ៤ របស់អ្នក)
-                    alert("❌ Telegram Error: " + resData.description + "\n\n*បញ្ជាក់៖ សូមប្រាកដថា Chat ID ត្រឹមត្រូវ និង Bot នៅក្នុង Group នោះ។");
-                }
-            } catch(e) {
-                // បង្ហាញកំហុស Fetch (ដូចជារូបភាពទី ៣ របស់អ្នក)
-                alert("❌ Error: Failed to connect. សូមឆែកអ៊ីនធឺណិតរបស់អ្នក!");
-            }
+                if(res.ok) alert("🚀 Report sent successfully!");
+                else alert("❌ Error: Check your Token/Chat ID.");
+            } catch (e) { alert("❌ Connection failed."); }
         }
 
         init();
     </script>
 </body>
 </html>
-
-
-
