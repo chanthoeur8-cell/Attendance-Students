@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIKIDS Attendance Management</title>
+    <title>MIKIDS Attendance Pro v9.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', 'Kantumruy Pro', sans-serif; background-color: #f1f5f9; }
         .active-class { background-color: #1e40af !important; color: white !important; border-left: 5px solid #fbbf24 !important; }
-        /* បន្ថែមពណ៌ពេលចុចលើជម្រើសនីមួយៗ */
-        .radio-p:checked + span { color: #10b981; font-weight: bold; } /* មក - ពណ៌បៃតង */
-        .radio-l:checked + span { color: #f59e0b; font-weight: bold; } /* ច្បាប់ - ពណ៌ទឹកក្រូច */
-        .radio-a:checked + span { color: #ef4444; font-weight: bold; } /* ឈប់ - ពណ៌ក្រហម */
+        .radio-p:checked + span { color: #10b981; font-weight: bold; }
+        .radio-l:checked + span { color: #f59e0b; font-weight: bold; }
+        .radio-a:checked + span { color: #ef4444; font-weight: bold; }
         @media print { .no-print { display: none; } }
     </style>
 </head>
@@ -34,8 +33,11 @@
                     <option value="November">November</option><option value="December">December</option>
                 </select>
                 <select id="sel-year" onchange="refreshTable()" class="bg-blue-800 text-xs border-none rounded px-2 outline-none cursor-pointer">
-                    <option value="2025">2025</option>
                     <option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
                 </select>
                 <button onclick="saveLocal()" class="bg-emerald-500 hover:bg-emerald-600 px-4 py-1.5 rounded text-xs font-bold transition">Save Data</button>
                 <button onclick="sendToTelegram()" class="bg-sky-500 hover:bg-sky-600 px-4 py-1.5 rounded text-xs font-bold transition">Send Telegram</button>
@@ -49,8 +51,8 @@
             <h2 class="text-slate-400 text-[10px] font-bold uppercase mb-4 tracking-widest italic">បញ្ជីថ្នាក់រៀន / Classes</h2>
             <div id="class-list" class="flex flex-col gap-1"></div>
             
-            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <label class="text-[9px] font-bold text-blue-600 uppercase">Telegram Config</label>
+            <div class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Telegram Settings</label>
                 <input id="tg-id" type="text" value="-1005090259958" class="w-full text-xs p-2 border rounded mt-1 mb-2 outline-none focus:ring-1 ring-blue-300">
                 <input id="tg-token" type="password" value="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw" class="w-full text-xs p-2 border rounded outline-none focus:ring-1 ring-blue-300">
             </div>
@@ -59,9 +61,12 @@
         <main class="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="p-6 border-b flex justify-between items-center bg-slate-50/50">
                 <div>
-                    <h2 id="display-class-name" class="text-2xl font-bold text-slate-800">Select class</h2>
+                    <h2 id="display-class-name" class="text-2xl font-bold text-slate-800">Please Select Class</h2>
                     <p id="display-date" class="text-slate-500 text-sm font-medium"></p>
                 </div>
+                <button onclick="selectAllPresent()" class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-200 transition no-print">
+                    ✅ Mark All Present
+                </button>
             </div>
 
             <div class="overflow-x-auto">
@@ -72,13 +77,13 @@
                             <th class="p-4 w-20">ID</th>
                             <th class="p-4">Student Name</th>
                             <th class="p-4 w-16 text-center">Sex</th>
-                            <th class="p-4 text-center">Status (P / L / A)</th>
+                            <th class="p-4 text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody id="student-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
                 </table>
             </div>
-            <div id="empty-msg" class="p-20 text-center text-slate-300 font-medium italic">Please select a class from the sidebar.</div>
+            <div id="empty-msg" class="p-20 text-center text-slate-300 font-medium italic">Select a class from the left sidebar to start.</div>
         </main>
     </div>
 
@@ -122,6 +127,14 @@
             });
         }
 
+        function selectAllPresent() {
+            if (currentIdx === -1) return;
+            const data = allData[currentIdx];
+            data.students.forEach((_, i) => {
+                document.querySelector(`input[name="s-${i}"][value="P"]`).checked = true;
+            });
+        }
+
         function refreshTable() {
             if (currentIdx === -1) return;
             document.getElementById('empty-msg').style.display = 'none';
@@ -129,40 +142,30 @@
             const month = document.getElementById('sel-month').value;
             const year = document.getElementById('sel-year').value;
             document.getElementById('display-class-name').innerText = data.className;
-            document.getElementById('display-date').innerText = `Attendance Period: ${month} ${year}`;
+            document.getElementById('display-date').innerText = `Period: ${month} ${year}`;
             
-            const storageKey = `mikids_db_${data.className}_${month}_${year}`;
+            const storageKey = `mikids_v9_${data.className}_${month}_${year}`;
             const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
 
             const tbody = document.getElementById('student-table-body');
             tbody.innerHTML = '';
             
             data.students.forEach((s, i) => {
-                const status = saved[s.n] || 'P'; // Default is 'P' (Present)
+                const status = saved[s.n] || 'P';
                 tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-colors">
+                    <tr>
                         <td class="p-4 text-center text-slate-400 font-mono text-[10px]">${i+1}</td>
                         <td class="p-4 font-bold text-blue-800 text-xs">${s.id}</td>
                         <td class="p-4 font-semibold text-slate-700">${s.n}</td>
                         <td class="p-4 text-center text-xs font-bold">${s.g}</td>
                         <td class="p-4">
                             <div class="flex justify-center gap-6">
-                                <label class="flex items-center gap-1.5 cursor-pointer group">
-                                    <input type="radio" name="s-${i}" value="P" ${status==='P'?'checked':''} class="radio-p w-4 h-4 accent-emerald-500"> 
-                                    <span class="text-[11px] group-hover:text-emerald-500">មក (✅)</span>
-                                </label>
-                                <label class="flex items-center gap-1.5 cursor-pointer group">
-                                    <input type="radio" name="s-${i}" value="L" ${status==='L'?'checked':''} class="radio-l w-4 h-4 accent-amber-500"> 
-                                    <span class="text-[11px] group-hover:text-amber-500">ច្បាប់ (P)</span>
-                                </label>
-                                <label class="flex items-center gap-1.5 cursor-pointer group">
-                                    <input type="radio" name="s-${i}" value="A" ${status==='A'?'checked':''} class="radio-a w-4 h-4 accent-red-500"> 
-                                    <span class="text-[11px] group-hover:text-red-500">ឈប់ (A)</span>
-                                </label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="s-${i}" value="P" ${status==='P'?'checked':''} class="radio-p w-4 h-4 accent-emerald-500"> <span class="text-[11px]">មក(✅)</span></label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="s-${i}" value="L" ${status==='L'?'checked':''} class="radio-l w-4 h-4 accent-amber-500"> <span class="text-[11px]">ច្បាប់(P)</span></label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="s-${i}" value="A" ${status==='A'?'checked':''} class="radio-a w-4 h-4 accent-red-500"> <span class="text-[11px]">អវត្តមាន(A)</span></label>
                             </div>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         }
 
@@ -171,16 +174,11 @@
             const data = allData[currentIdx];
             const month = document.getElementById('sel-month').value;
             const year = document.getElementById('sel-year').value;
-            const key = `mikids_db_${data.className}_${month}_${year}`;
-            
+            const key = `mikids_v9_${data.className}_${month}_${year}`;
             let obj = {};
-            data.students.forEach((s, i) => {
-                const radioValue = document.querySelector(`input[name="s-${i}"]:checked`).value;
-                obj[s.n] = radioValue;
-            });
-            
+            data.students.forEach((s, i) => { obj[s.n] = document.querySelector(`input[name="s-${i}"]:checked`).value; });
             localStorage.setItem(key, JSON.stringify(obj));
-            alert(`✅ Recorded! ${data.className} for ${month} saved.`);
+            alert("Attendance saved!");
         }
 
         async function sendToTelegram() {
@@ -189,7 +187,6 @@
             const cid = document.getElementById('tg-id').value;
             const data = allData[currentIdx];
             const month = document.getElementById('sel-month').value;
-            const year = document.getElementById('sel-year').value;
 
             let abs = [], lvs = [], pCount = 0;
             data.students.forEach((s, i) => {
@@ -199,23 +196,19 @@
                 else abs.push(s.n);
             });
 
-            let msg = `📊 *ATTENDANCE REPORT*\n🏫 ថ្នាក់៖ *${data.className}*\n📅 ខែ៖ *${month} ${year}*\n`;
-            msg += `━━━━━━━━━━━━━━━\n✅ វត្តមាន (P)៖ ${pCount}\n🟠 ច្បាប់ (L)៖ ${lvs.length}\n🔴 អវត្តមាន (A)៖ ${abs.length}\n`;
-            
-            if(abs.length > 0) msg += `\n❌ *ឈ្មោះសិស្សអវត្តមាន៖*\n${abs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
-            if(lvs.length > 0) msg += `\n\n📝 *ឈ្មោះសិស្សសុំច្បាប់៖*\n${lvs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
+            let msg = `🔔 *REPORT: ${data.className}*\n📅 Month: *${month}*\n`;
+            msg += `━━━━━━━━━━━━━━━\n✅ Present: ${pCount}\n🟠 Leave: ${lvs.length}\n🔴 Absent: ${abs.length}\n`;
+            if(abs.length > 0) msg += `\n❌ *Absents:*\n${abs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
+            if(lvs.length > 0) msg += `\n\n📝 *Leaves:*\n${lvs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
 
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({chat_id: cid, text: msg, parse_mode: 'Markdown'})
-                });
-                if(res.ok) alert("🚀 Report sent successfully!");
-                else alert("❌ Error: Check your Token/Chat ID.");
-            } catch (e) { alert("❌ Connection failed."); }
+            const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({chat_id: cid, text: msg, parse_mode: 'Markdown'})
+            });
+            if(res.ok) alert("Report sent!");
+            else alert("Error sending message. Check Chat ID.");
         }
-
         init();
     </script>
 </body>
