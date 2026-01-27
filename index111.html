@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ប្រព័ន្ធគ្រប់គ្រងវត្តមាន - MIKIDS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kantumruy Pro', sans-serif; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <header class="bg-white border-b p-4 no-print shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="text-center w-full">
+                <h2 class="text-xs font-bold">ព្រះរាជាណាចក្រកម្ពុជា | ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                <h1 class="text-lg font-bold mt-1 text-blue-900">សាលាអន្តរជាតិម៉ាយឃីដ (MIKIDS INTERNATIONAL SCHOOL)</h1>
+                <p class="text-sm text-gray-500">បញ្ជីវត្តមានសិស្សប្រចាំខែមករា ឆ្នាំ២០២៦</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-[calc(100vh-100px)]">
+        <aside class="w-80 bg-white border-r overflow-y-auto p-4 no-print">
+            <div class="mb-4">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">កំណត់ Telegram Bot</label>
+                <input id="tg-token" type="password" placeholder="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw" class="w-full text-xs p-2 border rounded mb-1">
+                <input id="tg-chatid" type="text" placeholder="-5090259958" class="w-full text-xs p-2 border rounded">
+            </div>
+            <h3 class="text-blue-900 font-bold mb-3 border-b pb-2">បញ្ជីថ្នាក់រៀន</h3>
+            <div id="class-menu" class="space-y-1"></div>
+        </aside>
+
+        <main class="flex-1 overflow-auto p-6 bg-white">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 id="current-class-title" class="text-2xl font-bold text-blue-800 tracking-tight">សូមជ្រើសរើសថ្នាក់</h2>
+                        <p id="teacher-info" class="text-sm text-gray-500 mt-1 italic"></p>
+                    </div>
+                    <div class="flex gap-2 no-print">
+                        <button onclick="window.print()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg border hover:bg-gray-200 font-bold transition">បោះពុម្ព</button>
+                        <button onclick="sendToTelegram()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 font-bold transition flex items-center gap-2">
+                            <span>✈️</span> ផ្ញើទៅ Telegram
+                        </button>
+                    </div>
+                </div>
+
+                <table class="w-full border-collapse border border-gray-200 shadow-sm text-sm">
+                    <thead>
+                        <tr class="bg-blue-900 text-white font-bold">
+                            <th class="border border-blue-900 p-3 w-12">ល.រ</th>
+                            <th class="border border-blue-900 p-3 w-24">អត្តលេខ</th>
+                            <th class="border border-blue-900 p-3 text-left">គោត្តនាម & នាម</th>
+                            <th class="border border-blue-900 p-3 w-12 text-center">ភេទ</th>
+                            <th class="border border-blue-900 p-3 text-center bg-blue-800">ស្ថានភាពវត្តមាន</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-rows"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const schoolData = [
+            { className: "ថ្នាក់មត្តេយ្យទាប", teacher: "", students: [{id:"147", n:"សុភក្រ វីរបុត្រ", g:"ប"},{id:"166", n:"លីណា រ័ត្នហុងស័ក្កិអធិភូ", g:"ប"},{id:"160", n:"ថូ សិទ្ធីយូណា", g:"ស"},{id:"175", n:"ហេង ជ័រម៉ីង", g:"ស"},{id:"---", n:"វ៉េត នីរីតា", g:"ស"}]},
+            { className: "មត្តេយ្យមធ្យម", teacher: "", students: [{id:"64", n:"ឃុន ទេពង្ស", g:"ប"},{id:"121", n:"នឿន វឌ្ឍនា", g:"ប"},{id:"128", n:"ពិសិទ្អ ច័ន្ទវឌ្ឃ", g:"ប"},{id:"141", n:"ហេង សាជីង", g:"ស"},{id:"132", n:"សុបញ្ញា មុនិរាជ", g:"ប"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"ប"},{id:"173", n:"សាន្ត លីប៉េង", g:"ប"},{id:"163", n:"អេង លីឆេង", g:"ប"},{id:"179", n:"ចន្ថា វឌ្ឍនា", g:"ប"},{id:"162", n:"យ៉ាន់ សុខឡេង", g:"ប"}]},
+            { className: "មត្តេយ្យមធ្យម (១)", teacher: "", students: [{id:"139", n:"ហ៊ឺម ម៉ីអ៊ិ", g:"ប"},{id:"146", n:"លន វេស្សភូ", g:"ប"},{id:"102", n:"សំណាង វីរៈបុត្រ", g:"ប"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"ប"},{id:"181", n:"ឈន ចេស្ដា", g:"ប"},{id:"87", n:"អ៊ុំ រតនាសិទ្ធីការ", g:"ស"},{id:"113", n:"ស៊ីម សិទ្ធីការ", g:"ស"},{id:"164", n:"អ៊ូសុវណ្ណ វេហា៍", g:"ប"},{id:"177", n:"វាសនា ពេជ្រសុម៉ាលី", g:"ស"},{id:"165", n:"លឹម លីម៉េងគ័ង្គ", g:"ប"}]},
+            { className: "មត្តេយ្យខ្ពស់ (១)", teacher: "", students: [{id:"29", n:"ខាន់ មុនីវល្លភា", g:"ស"},{id:"101", n:"ឈុំ វីរ់សិទ្ធ", g:"ប"},{id:"65", n:"និត សុធារ៉ា", g:"ប"},{id:"78", n:"នី លីជីង", g:"ស"},{id:"117", n:"ហ៊ុន រាណ្ណជេណស្ដា", g:"ប"},{id:"47", n:"បុណ្ណជេ ជេននី", g:"ស"},{id:"14", n:"ឃុន ទេពី", g:"ស"},{id:"62", n:"រិទ្ធី ពិស្សុតសុក្រឹត", g:"ប"},{id:"49", n:"ងិន ទៀនវិន", g:"ប"},{id:"107", n:"សុភក្រ័ វរៈសិទ្ធ", g:"ប"},{id:"170", n:"អុលវឿន ដាវីន", g:"ស"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"ស"},{id:"1", n:"ប៊ុនរីន ខេមរា", g:"ប"}]},
+            { className: "មត្តេយ្យខ្ពស់ (២)", teacher: "", students: [{id:"54", n:"យន់ លីហេង", g:"ប"},{id:"75", n:"វិន បញ្ញាវ័ន្ត", g:"ប"},{id:"90", n:"សូ រស្មីពនិតា", g:"ស"},{id:"50", n:"សូយ រក្សា", g:"ប"},{id:"0072", n:"អ៊ូ សុខអាមី", g:"ស"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"ស"},{id:"176", n:"ប៉ឹម ម៉ីជូ", g:"ស"},{id:"85", n:"សេរី ចន្ទវឌ្ឍនា", g:"ប"},{id:"161", n:"លីម ហ៊ីប៉", g:"ប"},{id:"55", n:"អ៊ា ជីងហ័រ", g:"ស"},{id:"0079", n:"មិត្ត ម៉េងហេង", g:"ប"},{id:"74", n:"ចាន់នី ស៊ូសាន់ណា", g:"ស"}]},
+            { className: "ថ្នាក់ទី១", teacher: "", students: [{id:"75", n:"ឆន វិរៈសិទ្ធ", g:"ប"},{id:"47", n:"ជាឡិច កូលីន", g:"ប"},{id:"92", n:"សុបញ្ញា សោម៉ា", g:"ស"},{id:"83", n:"ភឺន ថិរាយុ", g:"ប"},{id:"69", n:"លី ឆាយឈ័ន", g:"ប"},{id:"77", n:"វុឌ្ឍី ដាវីកា", g:"ស"},{id:"93", n:"អ៊ឹម រោចនា", g:"ស"},{id:"72", n:"វង្ស ដារ៉ាវីន", g:"ប"},{id:"95", n:"ចាវ វិនហាវ", g:"ប"},{id:"80", n:"ងួន បញ្ញាពុទ្ធិស័ក្តិ", g:"ប"}]},
+            { className: "ថ្នាក់ទី១ (១)", teacher: "", students: [{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"ប"},{id:"91", n:"ប៊ូ សាធុការ", g:"ស"},{id:"82", n:"សេន យ៉ាស្មីនណា", g:"ស"},{id:"85", n:"ដន សុភ័ណ្ឌម៉ូនីកា", g:"ស"},{id:"78", n:"ស៊្រាង សៀវហ្វុង", g:"ស"},{id:"73", n:"ហេង ម៉ីអ៊ិ", g:"ស"},{id:"74", n:"អឿន ពៅវល័ក្ខ", g:"ស"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"ប"}]},
+            { className: "ថ្នាក់ទី២", teacher: "", students: [{id:"21", n:"ចន្ថា លីតា", g:"ស"},{id:"20", n:"ពៅ សុខចិន", g:"ប"},{id:"17", n:"ណារ៉ា ហេងលី", g:"ប"},{id:"23", n:"សុខ សម្បត្តិ", g:"ប"},{id:"22", n:"សុខ ដាលីស", g:"ស"},{id:"29", n:"ស្រស់ រីហ្សា", g:"ស"},{id:"41", n:"ប៉ុន រីយ៉ា", g:"ស"}]},
+            { className: "ថ្នាក់ទី២ (១)", teacher: "", students: [{id:"59", n:"អុង បញ្ញារ័ត្ន", g:"ប"},{id:"31", n:"មិត្ត ម៉េងហួរ", g:"ប"},{id:"14", n:"យស់ នរិន្ទ", g:"ប"},{id:"33", n:"វង់ ពុទ្ធិតា", g:"ស"},{id:"62", n:"សូយ បញ្ញា", g:"ប"},{id:"40", n:"សេង សាណា", g:"ស"},{id:"39", n:"ចន្ទ សុផាយ៉ាមេឃ", g:"ប"},{id:"30", n:"ស៊នវីរៈ បញ្ញាទេពី", g:"ស"},{id:"27", n:"ប៊ូ តាម៉ា", g:"ប"},{id:"65", n:"កែវ មុន្នីឧត្តម", g:"ប"},{id:"56", n:"វន្តវិន ថាណា", g:"ស"},{id:"36", n:"ហាន ស៊ីវហ័រ", g:"ស"}]},
+            { className: "ថ្នាក់ទី៣", teacher: "", students: [{id:"9", n:"កែវ វីនសុឧត្តតារា", g:"ស"},{id:"28", n:"ឈុនតា រតនៈខុនដូ", g:"ស"},{id:"10", n:"យ៉ា ពេជ្រម៉ូនីកា", g:"ស"},{id:"15", n:"លីម ពុទ្ធិរាជ", g:"ប"},{id:"3", n:"ឡ ស៊ីវហ៊ួយ", g:"ស"},{id:"2", n:"ឡាយ មុនិចិន្ដា", g:"ស"},{id:"24", n:"អោក និសិ្សត", g:"ប"},{id:"44", n:"ចំរើន ម៉ានីតា", g:"ស"}]},
+            { className: "ថ្នាក់ទី៤-៥", teacher: "", students: [{id:"1", n:"ឡាយ ភារ៉ាដាវីឌ", g:"ប"},{id:"42", n:"វង្ស មុនីកញ្ចនា", g:"ស"},{id:"43", n:"ពៅ សុនីតា", g:"ស"},{id:"4", n:"ឡ សុវណ្ណហាន់ណា", g:"ស"}]},
+            { className: "Fount 1 (ព្រឹក)", teacher: "", students: [{id:"---", n:"ឆាង ស៊ីងអាយ", g:"ស"},{id:"---", n:"ស៊ីម សិទ្ធិកា", g:"ស"},{id:"82", n:"រុន រស្មី", g:"ប"},{id:"---", n:"អ៊ុំ រតនាសិទ្ធិការ្យ", g:"ស"},{id:"149", n:"ធីសុវណ្ណ សិទ្ធិកា", g:"ស"},{id:"143", n:"ផន សុខហៀង", g:"ប"},{id:"133", n:"សុទ្ធ លីនប្រុសសិទ្ធ", g:"ប"},{id:"134", n:"អ៊ាប លីយីង", g:"ស"},{id:"---", n:"សេរី ចាន់វឌ្ឍនា", g:"ប"},{id:"---", n:"ហ៊ឺ ម៉ីអ៊ិង", g:"ប"},{id:"---", n:"ចាន់នី ស៊ូសាន់ណា", g:"ស"},{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"ប"},{id:"127", n:"ហម ចាន់បុរីរក្ស", g:"ប"},{id:"182", n:"តាំង ហ៊ួយលីន", g:"ស"}]},
+            { className: "Fount 1 (ល្ងាច)", teacher: "", students: [{id:"---", n:"អ៊ុំ រតនាសិទ្ធិការ្យ", g:"ស"},{id:"---", n:"ងិន ទៀនវិន", g:"ប"},{id:"---", n:"ប៊ុនរីន ខេមរា", g:"ប"},{id:"116", n:"ឆន ម៉េងស៊ីន", g:"ប"},{id:"58", n:"ងួន គីមហាប់", g:"ប"},{id:"145", n:"ឆាយ ភីងអ៊ីង", g:"ស"},{id:"125", n:"បញ្ញា ភេត្រា", g:"ស"},{id:"90", n:"ចំរើន រឿនរឹទ្ធិរាជ", g:"ប"},{id:"159", n:"ថន ស៊ីហ្គ្សិច", g:"ស"}]},
+            { className: "Fount 2", teacher: "", students: [{id:"86", n:"ធេង ម៉េងលី", g:"ប"},{id:"---", n:"ស៊្រាង សៀវហ្វុង", g:"ស"},{id:"---", n:"ហេង ម៉ីអ៊ិ", g:"ស"},{id:"---", n:"អឿន ពៅវល័ក្ខ", g:"ស"},{id:"---", n:"ហាន ស៊ីវហ័រ", g:"ស"},{id:"---", n:"រ័ត្ន សុវណ្ណច័ន្ទណាកា", g:"ប"},{id:"---", n:"ចំរើន ម៉ានីតា", g:"ស"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"ប"},{id:"---", n:"ចំរើន ច័ន្ទឧត្តម", g:"ប"}]},
+            { className: "Fount 2 (Narein)", teacher: "Narein", students: [{id:"68", n:"សុង រឹទ្ធស័ក្ក", g:"ប"},{id:"---", n:"ពៅ សុខចិន", g:"ប"},{id:"66", n:"ប៊ុនឡេង អ៊ៃដឹក", g:"ប"},{id:"67", n:"ភោគ ស្ពីតឌី", g:"ប"},{id:"---", n:"អ៊ឹម រោចនា", g:"ស"},{id:"---", n:"ងួន បញ្ញាពុទ្ធិស័ក្តិ", g:"ប"},{id:"---", n:"ជាឡិច កូលីន", g:"ប"},{id:"---", n:"ណារ៉ា ហេងលី", g:"ប"},{id:"---", n:"ឆន វិរៈសិទ្ធ", g:"ប"},{id:"---", n:"សុខ សម្បត្តិ", g:"ប"},{id:"---", n:"សុខ ដាលីស", g:"ស"},{id:"---", n:"លី ឆាយឈ័ន", g:"ប"}]},
+            { className: "Level 1", teacher: "ឌន ស្រីណែត", students: [{id:"---", n:"អោក ឧត្តម", g:"ប"},{id:"---", n:"ណារ៉ា ហេងឡាយ", g:"ប"},{id:"62", n:"ឈូក ឈិនឡុង", g:"ប"},{id:"---", n:"ពៅ សុនីតា", g:"ស"},{id:"---", n:"កែវ វីនសុឧត្តតារា", g:"ស"},{id:"---", n:"ឈុនតា រតនៈខុនដូ", g:"ស"},{id:"64", n:"លាង វឌ្ឃនធនុ", g:"ប"},{id:"---", n:"យ៉ា ពេជ្រម៉ូនីកា", g:"ស"},{id:"---", n:"លីម ពុទ្ធិរាជ", g:"ប"},{id:"---", n:"ឡ ស៊ីវហ៊ួយ", g:"ស"},{id:"---", n:"ឡាយ មុនិចិន្ដា", g:"ស"},{id:"---", n:"អោក និសិ្សត", g:"ប"},{id:"---", n:"ចន្ទ សុផាយ៉ាមេឃ", g:"ប"},{id:"---", n:"ស៊នវីរៈ បញ្ញាទេពី", g:"ស"}]},
+            { className: "Nursery", teacher: "", students: [{id:"148", n:"បេរ៉េស ម៉ៃឃើស", g:"ប"},{id:"144", n:"ហេង សន្តិភាព", g:"ប"},{id:"157", n:"ដួង សុមេធា", g:"ប"},{id:"183", n:"ថុង ហ្វុងម៉េង", g:"ប"},{id:"158", n:"ពន្លក វិរសិទ្ធ", g:"ប"},{id:"172", n:"រតនា សៀវលិ", g:"ស"},{id:"180", n:"រ៉ាត់ ពេជ្រមរកត", g:"ស"},{id:"178", n:"លីវទ្ធី ជុតិមា", g:"ស"},{id:"184", n:"ហូ លីភីង", g:"ប"},{id:"174", n:"វិច្ឆិកា មុន្នីទេពី", g:"ស"},{id:"185", n:"យឹម ពុទ្ធិវង្ស", g:"ប"},{id:"171", n:"សុង សិរីបុត្រ", g:"ប"},{id:"147", n:"សុភ័ក្រ វីរបុត្រ", g:"ប"},{id:"150", n:"វ៉េត នីរីតា", g:"ស"},{id:"166", n:"លីណា ហុងស័ក្កិអធិភូ", g:"ប"}]},
+            { className: "Level 2", teacher: "ឌន ស្រីណែត", students: [{id:"48", n:"សុភក្ដិ ទិត្រដាណា", g:"ស"},{id:"63", n:"នឿន វឌ្ឍនះ", g:"ប"},{id:"49", n:"សុភក្ដិ រតន", g:"ប"},{id:"61", n:"ផល សុវណ្ណ", g:"ប"},{id:"53", n:"ហុង សិទ្ធិណាល់", g:"ប"},{id:"55", n:"ធេង ជូលីញ", g:"ស"},{id:"1", n:"ឡាយ ភារ៉ាដាវីឌ", g:"ប"},{id:"4", n:"ឡ សុវណ្ណហាន់ណា", g:"ស"}]}
+        ];
+
+        let selectedIndex = 0;
+
+        function init() {
+            const menu = document.getElementById('class-menu');
+            schoolData.forEach((c, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 rounded-lg hover:bg-blue-50 transition text-sm font-medium border-b border-gray-50 flex justify-between";
+                btn.innerHTML = `<span>${c.className}</span> <span class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-400">${c.students.length} នាក់</span>`;
+                btn.onclick = () => loadClass(i);
+                menu.appendChild(btn);
+            });
+            loadClass(0);
+        }
+
+        function loadClass(i) {
+            selectedIndex = i;
+            const data = schoolData[i];
+            document.getElementById('current-class-title').innerText = "បញ្ជីវត្តមានសិស្ស " + data.className;
+            document.getElementById('teacher-info').innerText = data.teacher ? "បង្រៀនដោយ៖ " + data.teacher : "បង្រៀនដោយ៖ ........................";
+            
+            const tbody = document.getElementById('student-rows');
+            tbody.innerHTML = '';
+
+            data.students.forEach((s, idx) => {
+                const row = `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="border border-gray-200 p-3 text-center text-gray-400 font-mono">${idx + 1}</td>
+                        <td class="border border-gray-200 p-3 text-center font-bold text-blue-700">${s.id}</td>
+                        <td class="border border-gray-200 p-3 font-bold text-gray-800">${s.n}</td>
+                        <td class="border border-gray-200 p-3 text-center">${s.g}</td>
+                        <td class="border border-gray-200 p-3">
+                            <div class="flex justify-center gap-4 no-print">
+                                <label class="flex items-center gap-1 cursor-pointer text-xs"><input type="radio" name="st-${idx}" value="P" checked class="accent-green-600"> មក</label>
+                                <label class="flex items-center gap-1 cursor-pointer text-xs"><input type="radio" name="st-${idx}" value="L" class="accent-orange-500"> ច្បាប់</label>
+                                <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-red-600"><input type="radio" name="st-${idx}" value="A" class="accent-red-600"> ឈប់</label>
+                            </div>
+                            <div class="hidden print:block text-center text-gray-200">.......</div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        async function sendToTelegram() {
+            const token = document.getElementById('tg-token').value;
+            const chatId = document.getElementById('tg-chatid').value;
+
+            if(!token || !chatId) {
+                alert("សូមបញ្ចូល Bot Token និង Chat ID ជាមុនសិន!");
+                return;
+            }
+
+            const data = schoolData[selectedIndex];
+            const rows = document.querySelectorAll('#student-rows tr');
+            let absents = [];
+
+            rows.forEach((row, idx) => {
+                const isAbsent = row.querySelector(`input[name="st-${idx}"][value="A"]`).checked;
+                if(isAbsent) absents.push(data.students[idx].n);
+            });
+
+            let msg = `🔔 *របាយការណ៍អវត្តមាន*\n🏫 ថ្នាក់៖ *${data.className}*\n📅 កាលបរិច្ឆេទ៖ ${new Date().toLocaleDateString('km-KH')}\n`;
+            msg += `----------------------------\n`;
+            if(absents.length > 0) {
+                msg += `បញ្ជីឈ្មោះសិស្សអវត្តមាន (${absents.length} នាក់)៖\n`;
+                absents.forEach((name, i) => msg += `${i+1}. ${name}\n`);
+            } else {
+                msg += `✅ ថ្ងៃនេះសិស្សមកគ្រប់ទាំងអស់!`;
+            }
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({chat_id: chatId, text: msg, parse_mode: 'Markdown'})
+                });
+                if(res.ok) alert("ផ្ញើទៅ Telegram រួចរាល់!");
+                else alert("មានបញ្ហា! សូមឆែក Token/Chat ID ឡើងវិញ។");
+            } catch(e) { alert("Error: " + e); }
+        }
+
+        init();
+    </script>
+</body>
+</html>
