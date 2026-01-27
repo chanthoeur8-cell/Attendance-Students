@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIKIDS Attendance System v4.0</title>
+    <title>MIKIDS Attendance System v4.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -41,7 +41,9 @@
                     <option value="វិច្ឆិកា" class="text-black">វិច្ឆិកា</option>
                     <option value="ធ្នូ" class="text-black">ធ្នូ</option>
                 </select>
+
                 <select id="select-year" onchange="loadClass(selectedIndex)" class="bg-transparent text-white text-sm font-bold outline-none cursor-pointer">
+                    <option value="២០២៤" class="text-black">២០២៤</option>
                     <option value="២០២៥" class="text-black">២០២៥</option>
                     <option value="២០២៦" class="text-black" selected>២០២៦</option>
                     <option value="២០២៧" class="text-black">២០២៧</option>
@@ -56,12 +58,13 @@
     <div class="flex h-[calc(100vh-85px)]">
         <aside class="w-80 bg-white border-r overflow-y-auto p-4 no-print shadow-sm">
             <div class="mb-6 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                <label class="block text-[10px] font-bold text-blue-800 uppercase mb-2 italic">Telegram Config (Auto-Save)</label>
+                <label class="block text-[10px] font-bold text-blue-800 uppercase mb-2 italic">Telegram Bot Setup</label>
                 <input id="tg-token" type="password" value="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw" class="w-full text-[10px] p-2 border rounded mb-2 outline-none" placeholder="Bot Token">
-                <input id="tg-chatid" type="text" value="-5090259958" class="w-full text-[10px] p-2 border rounded outline-none" placeholder="Chat ID">
+                <input id="tg-chatid" type="text" value="-5090259958" class="w-full text-[10px] p-2 border rounded outline-none" placeholder="Chat ID (e.g. -100...)">
+                <p class="text-[9px] text-gray-500 mt-2 italic">* ប្រាកដថា Bot របស់អ្នកត្រូវបានបញ្ចូលក្នុង Group រួចហើយ។</p>
             </div>
 
-            <h3 class="text-gray-400 font-bold mb-3 px-2 text-[10px] uppercase tracking-widest">Class list</h3>
+            <h3 class="text-gray-400 font-bold mb-3 px-2 text-[10px] uppercase tracking-widest italic">Select class</h3>
             <div id="class-menu" class="space-y-1 pb-10"></div>
         </aside>
 
@@ -104,9 +107,9 @@
         const schoolData = [
             { className: "ថ្នាក់មត្តេយ្យទាប", students: [{id:"147", n:"សុភក្រ វីរបុត្រ", g:"ប"},{id:"166", n:"លីណា រ័ត្នហុងស័ក្កិអធិភូ", g:"ប"},{id:"160", n:"ថូ សិទ្ធីយូណា", g:"ស"},{id:"175", n:"ហេង ជ័រម៉ីង", g:"ស"},{id:"---", n:"វ៉េត នីរីតា", g:"ស"}]},
             { className: "មត្តេយ្យមធ្យម", students: [{id:"64", n:"ឃុន ទេពង្ស", g:"ប"},{id:"121", n:"នឿន វឌ្ឍនា", g:"ប"},{id:"128", n:"ពិសិទ្អ ច័ន្ទវឌ្ឃ", g:"ប"},{id:"141", n:"ហេង សាជីង", g:"ស"},{id:"132", n:"សុបញ្ញា មុនិរាជ", g:"ប"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"ប"},{id:"173", n:"សាន្ត លីប៉េង", g:"ប"},{id:"163", n:"អេង លីឆេង", g:"ប"},{id:"179", n:"ចន្ថា វឌ្ឍនា", g:"ប"},{id:"162", n:"យ៉ាន់ សុខឡេង", g:"ប"}]},
-            { className: "មត្តេយ្យមធ្យម (១)", students: [{id:"139", n:"ហ៊ឺម ម៉ីអ៊ិ", g:"ប"},{id:"146", n:"លន វេស្សភូ", g:"ប"},{id:"102", n:"សំណាង វីរៈបុត្រ", g:"ប"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"ប"},{id:"181", n:"ឈន ចេស្ដា", g:"ប"},{id:"87", n:"អ៊ុំ រតនាសិទ្ធីការ", g:"ស"},{id:"113", n:"ស៊ីម សិទ្ធីការ", g:"ស"},{id:"164", n:"អ៊ូសុវណ្ណ វេហា៍", g:"ប"},{id:"177", n:"វាសនា ពេជ្រសុម៉ាលី", g:"ស"},{id:"165", n:"លឹម លីម៉េងគ័ង្គ", g:"ប"}]},
+            { className: "មត្តេយ្យមធ្យម (១)", students: [{id:"139", n:"ហ៊ឺម ម៉ីអ៊ិ", g:"ប"},{id:"146", n:"លន វេស្សភូ", g:"ប"},{id:"102", n:"សំណាង វីរៈបុត្រ", g:"ប"},{id:"181", n:"ឈន ចេស្ដា", g:"ប"},{id:"87", n:"អ៊ុំ រតនាសិទ្ធីការ", g:"ស"},{id:"113", n:"ស៊ីម សិទ្ធីការ", g:"ស"},{id:"164", n:"អ៊ូសុវណ្ណ វេហា៍", g:"ប"},{id:"177", n:"វាសនា ពេជ្រសុម៉ាលី", g:"ស"},{id:"165", n:"លឹម លីម៉េងគ័ង្គ", g:"ប"}]},
             { className: "មត្តេយ្យខ្ពស់ (១)", students: [{id:"29", n:"ខាន់ មុនីវល្លភា", g:"ស"},{id:"101", n:"ឈុំ វីរ់សិទ្ធ", g:"ប"},{id:"65", n:"និត សុធារ៉ា", g:"ប"},{id:"78", n:"នី លីជីង", g:"ស"},{id:"117", n:"ហ៊ុន រាណ្ណជេណស្ដា", g:"ប"},{id:"47", n:"បុណ្ណជេ ជេននី", g:"ស"},{id:"14", n:"ឃុន ទេពី", g:"ស"},{id:"62", n:"រិទ្ធី ពិស្សុតសុក្រឹត", g:"ប"},{id:"49", n:"ងិន ទៀនវិន", g:"ប"},{id:"107", n:"សុភក្រ័ វរៈសិទ្ធ", g:"ប"},{id:"170", n:"អុលវឿន ដាវីន", g:"ស"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"ស"},{id:"1", n:"ប៊ុនរីន ខេមរា", g:"ប"}]},
-            { className: "មត្តេយ្យខ្ពស់ (២)", students: [{id:"54", n:"យន់ លីហេង", g:"ប"},{id:"75", n:"វិន បញ្ញាវ័ន្ត", g:"ប"},{id:"90", n:"សូ រស្មីពនិតា", g:"ស"},{id:"50", n:"សូយ រក្សា", g:"ប"},{id:"0072", n:"អ៊ូ សុខអាមី", g:"ស"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"ស"},{id:"176", n:"ប៉ឹម ម៉ីជូ", g:"ស"},{id:"85", n:"សេរី ចន្ទវឌ្ឍនា", g:"ប"},{id:"161", n:"លីម ហ៊ីប៉", g:"ប"},{id:"55", n:"អ៊ា ជីងហ័រ", g:"ស"},{id:"0079", n:"មិត្ត ម៉េងហេង", g:"ប"},{id:"74", n:"ចាន់នី ស៊ូសាន់ណា", g:"ស"}]},
+            { className: "មត្តេយ្យខ្ពស់ (២)", students: [{id:"54", n:"យន់ លីហេង", g:"ប"},{id:"75", n:"វិន បញ្ញាវ័ន្ត", g:"ប"},{id:"90", n:"សូ រស្មីពនិតា", g:"ស"},{id:"50", n:"សូយ រក្សា", g:"ប"},{id:"0072", n:"អ៊ូ សុខអាមី", g:"ស"},{id:"176", n:"ប៉ឹម ម៉ីជូ", g:"ស"},{id:"85", n:"សេរី ចន្ទវឌ្ឍនា", g:"ប"},{id:"161", n:"លីម ហ៊ីប៉", g:"ប"},{id:"55", n:"អ៊ា ជីងហ័រ", g:"ស"},{id:"0079", n:"មិត្ត ម៉េងហេង", g:"ប"},{id:"74", n:"ចាន់នី ស៊ូសាន់ណា", g:"ស"}]},
             { className: "ថ្នាក់ទី១", students: [{id:"75", n:"ឆន វិរៈសិទ្ធ", g:"ប"},{id:"47", n:"ជាឡិច កូលីន", g:"ប"},{id:"92", n:"សុបញ្ញា សោម៉ា", g:"ស"},{id:"83", n:"ភឺន ថិរាយុ", g:"ប"},{id:"69", n:"លី ឆាយឈ័ន", g:"ប"},{id:"77", n:"វុឌ្ឍី ដាវីកា", g:"ស"},{id:"93", n:"អ៊ឹម រោចនា", g:"ស"},{id:"72", n:"វង្ស ដារ៉ាវីន", g:"ប"},{id:"95", n:"ចាវ វិនហាវ", g:"ប"},{id:"80", n:"ងួន បញ្ញាពុទ្ធិស័ក្តិ", g:"ប"}]},
             { className: "ថ្នាក់ទី១ (១)", students: [{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"ប"},{id:"91", n:"ប៊ូ សាធុការ", g:"ស"},{id:"82", n:"សេន យ៉ាស្មីនណា", g:"ស"},{id:"85", n:"ដន សុភ័ណ្ឌម៉ូនីកា", g:"ស"},{id:"78", n:"ស៊្រាង សៀវហ្វុង", g:"ស"},{id:"73", n:"ហេង ម៉ីអ៊ិ", g:"ស"},{id:"74", n:"អឿន ពៅវល័ក្ខ", g:"ស"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"ប"}]},
             { className: "ថ្នាក់ទី២", students: [{id:"21", n:"ចន្ថា លីតា", g:"ស"},{id:"20", n:"ពៅ សុខចិន", g:"ប"},{id:"17", n:"ណារ៉ា ហេងលី", g:"ប"},{id:"23", n:"សុខ សម្បត្តិ", g:"ប"},{id:"22", n:"សុខ ដាលីស", g:"ស"},{id:"29", n:"ស្រស់ រីហ្សា", g:"ស"},{id:"41", n:"ប៉ុន រីយ៉ា", g:"ស"}]},
@@ -146,7 +149,7 @@
             document.getElementById(`btn-class-${i}`).classList.add('active-class', 'bg-blue-50');
 
             document.getElementById('current-class-title').innerText = "ថ្នាក់ " + data.className;
-            document.getElementById('attendance-period').innerText = `Period: ${month} ${year}`;
+            document.getElementById('attendance-period').innerText = `ខែ: ${month} ឆ្នាំ: ${year}`;
             
             const storageKey = `MIKIDS_${data.className}_${month}_${year}`;
             const savedData = JSON.parse(localStorage.getItem(storageKey)) || {};
@@ -181,12 +184,12 @@
 
             let attendanceToSave = {};
             document.querySelectorAll('#student-rows tr').forEach((row, idx) => {
-                const status = row.querySelector(`input[name="st-${idx}"]:checked`).value;
-                attendanceToSave[data.students[idx].n] = status;
+                const radio = row.querySelector(`input[name="st-${idx}"]:checked`);
+                if (radio) attendanceToSave[data.students[idx].n] = radio.value;
             });
 
             localStorage.setItem(storageKey, JSON.stringify(attendanceToSave));
-            alert(`✅ Save Attendance student ${data.className} Month ${month} Complete!`);
+            alert(`✅ រក្សាទុកជោគជ័យសម្រាប់ ${data.className} (${month}-${year})`);
         }
 
         async function sendToTelegram() {
@@ -196,8 +199,8 @@
             const year = document.getElementById('select-year').value;
             const data = schoolData[selectedIndex];
             
-            if (!token || token.includes("...")) {
-                alert("❌ សូមបញ្ចូល Bot Token ពេញលេញ!"); return;
+            if (!token || !chatId) {
+                alert("❌ សូមបំពេញ Bot Token និង Chat ID!"); return;
             }
 
             let absents = [];
@@ -207,9 +210,9 @@
                 }
             });
 
-            let msg = `📢 *REPORT: ABSENT STUDENTS*\n🏫 Class: *${data.className}*\n📅 Period: *${month} ${year}*\n`;
+            let msg = `📢 *MIKIDS ABSENT REPORT*\n🏫 ថ្នាក់: *${data.className}*\n📅 ខែ: *${month} ${year}*\n`;
             msg += `--------------------------\n`;
-            msg += absents.length > 0 ? `❌ Absent (${absents.length}):\n` + absents.map((n, i) => `${i+1}. ${n}`).join('\n') : `✅ Everyone is present today!`;
+            msg += absents.length > 0 ? `❌ សិស្សអវត្តមាន (${absents.length} នាក់):\n` + absents.map((n, i) => `${i+1}. ${n}`).join('\n') : `✅ សិស្សមកគ្រប់គ្នា!`;
 
             try {
                 const url = `https://api.telegram.org/bot${token}/sendMessage`;
@@ -220,10 +223,15 @@
                 });
 
                 const resData = await response.json();
-                if(resData.ok) alert("✈️ របាយការណ៍ត្រូវបានផ្ញើទៅ Telegram រួចរាល់!");
-                else alert("❌ Telegram Error: " + resData.description);
+                if(resData.ok) {
+                    alert("✈️ របាយការណ៍ត្រូវបានផ្ញើទៅ Telegram រួចរាល់!");
+                } else {
+                    // បង្ហាញកំហុសដែលមកពី Telegram (ដូចជារូបភាពទី ៤ របស់អ្នក)
+                    alert("❌ Telegram Error: " + resData.description + "\n\n*បញ្ជាក់៖ សូមប្រាកដថា Chat ID ត្រឹមត្រូវ និង Bot នៅក្នុង Group នោះ។");
+                }
             } catch(e) {
-                alert("❌ ការផ្ញើបរាជ័យ! សូមឆែកអ៊ីនធឺណិត និង Bot Token ។");
+                // បង្ហាញកំហុស Fetch (ដូចជារូបភាពទី ៣ របស់អ្នក)
+                alert("❌ Error: Failed to connect. សូមឆែកអ៊ីនធឺណិតរបស់អ្នក!");
             }
         }
 
