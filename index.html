@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធគ្រប់គ្រងវត្តមានសិស្ស MIKIDS - MIKIDS Attendance Management System</title>
+    <title>MIKIDS Attendance Management System</title>
     <style>
         * {
             margin: 0;
@@ -1109,9 +1109,9 @@
                 const status = attendanceData[key] || 'present';
                 
                 if (status === 'absent') {
-                    absentList.push(`❌ ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
+                    absentList.push(`A ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
                 } else if (status === 'permission') {
-                    permissionList.push(`📝 ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
+                    permissionList.push(`P ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
                 }
             });
 
@@ -1205,6 +1205,7 @@
     </script>
 </body>
 </html>
+
 
 
 
