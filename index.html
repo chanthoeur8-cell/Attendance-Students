@@ -1,215 +1,863 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIKIDS Attendance Pro v9.0</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <title>MIKIDS - ប្រព័ន្ធវត្តមានសិស្ស</title>
     <style>
-        body { font-family: 'Inter', 'Kantumruy Pro', sans-serif; background-color: #f1f5f9; }
-        .active-class { background-color: #1e40af !important; color: white !important; border-left: 5px solid #fbbf24 !important; }
-        .radio-p:checked + span { color: #10b981; font-weight: bold; }
-        .radio-l:checked + span { color: #f59e0b; font-weight: bold; }
-        .radio-a:checked + span { color: #ef4444; font-weight: bold; }
-        @media print { .no-print { display: none; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Khmer OS Battambang', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .date-selector {
+            background: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .date-selector select {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .date-selector select:hover {
+            border-color: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .date-selector button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-save {
+            background: #28a745;
+        }
+
+        .btn-save:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-telegram {
+            background: #0088cc;
+        }
+
+        .btn-telegram:hover {
+            background: #006699;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
+        }
+
+        .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 2px solid #e0e0e0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .class-list {
+            list-style: none;
+        }
+
+        .class-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .class-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .class-item.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .telegram-settings {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .telegram-settings h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .telegram-settings input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .telegram-settings small {
+            color: #856404;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .btn-mark-all {
+            padding: 12px 25px;
+            background: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-mark-all:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .attendance-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .attendance-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .attendance-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .attendance-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-select {
+            padding: 8px 15px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .status-select:hover {
+            border-color: #764ba2;
+        }
+
+        .status-present {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-absent {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-permission {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            .date-selector {
+                flex-direction: column;
+            }
+
+            .date-selector select,
+            .date-selector button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 MIKIDS</h1>
+            <p>ប្រព័ន្ធគ្រប់គ្រងវត្តមានសិស្ស / Attendance System</p>
+        </div>
 
-    <nav class="bg-blue-900 text-white p-4 sticky top-0 z-50 shadow-md no-print">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-yellow-400 text-blue-900 font-black px-2 py-1 rounded">MIKIDS</div>
-                <h1 class="font-bold text-lg tracking-tight">Attendance System</h1>
+        <div class="date-selector">
+            <select id="monthSelect">
+                <option value="0">មករា / January</option>
+                <option value="1">កុម្ភៈ / February</option>
+                <option value="2">មីនា / March</option>
+                <option value="3">មេសា / April</option>
+                <option value="4">ឧសភា / May</option>
+                <option value="5">មិថុនា / June</option>
+                <option value="6">កក្កដា / July</option>
+                <option value="7">សីហា / August</option>
+                <option value="8">កញ្ញា / September</option>
+                <option value="9">តុលា / October</option>
+                <option value="10">វិច្ឆិកា / November</option>
+                <option value="11">ធ្នូ / December</option>
+            </select>
+
+            <select id="yearSelect">
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+                <option value="2029">2029</option>
+                <option value="2030">2030</option>
+            </select>
+
+            <button class="btn-save" onclick="saveData()">💾 រក្សាទុកទិន្នន័យ / Save Data</button>
+            <button class="btn-telegram" onclick="sendToTelegram()">📤 ផ្ញើ Telegram / Send Telegram</button>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h3>📚 បញ្ជីថ្នាក់រៀន / Classes</h3>
+                <ul class="class-list" id="classList">
+                    <li class="class-item" onclick="selectClass('ថ្នាក់មត្តេយ្យទាប')">ថ្នាក់មត្តេយ្យទាប</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់មតេ្ដយ្យកម្រិតមធ្យម២')">ថ្នាក់មតេ្ដយ្យកម្រិតមធ្យម២</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់មតេ្ដយ្យកម្រិតមធ្យម១')">ថ្នាក់មតេ្ដយ្យកម្រិតមធ្យម១</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់មតេ្ដយ្យកម្រិតខ្ពស់១')">ថ្នាក់មតេ្ដយ្យកម្រិតខ្ពស់១</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់មតេ្ដយ្យកម្រិតខ្ពស់')">ថ្នាក់មតេ្ដយ្យកម្រិតខ្ពស់</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់ទី១')">ថ្នាក់ទី១</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់ទី១,១')">ថ្នាក់ទី១,១</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់ទី២')">ថ្នាក់ទី២</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់ទី២,១')">ថ្នាក់ទី២,១</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់ទី៣')">ថ្នាក់ទី៣</li>
+                    <li class="class-item" onclick="selectClass('ថ្នាក់ទី៤ ៥')">ថ្នាក់ទី៤ ៥</li>
+                    <li class="class-item" onclick="selectClass('Fount1 mooning')">Fount1 mooning</li>
+                    <li class="class-item" onclick="selectClass('Fount1 Evening')">Fount1 Evening</li>
+                    <li class="class-item" onclick="selectClass('Fount2')">Fount2</li>
+                    <li class="class-item" onclick="selectClass('Fount2.10.narein')">Fount2.10.narein</li>
+                    <li class="class-item" onclick="selectClass('Level1')">Level1</li>
+                    <li class="class-item" onclick="selectClass('Nursery')">Nursery</li>
+                    <li class="class-item" onclick="selectClass('Level2')">Level2</li>
+                </ul>
+
+                <div class="telegram-settings">
+                    <h3>⚙️ Telegram Settings</h3>
+                    <small>Bot Token (ទទួលបានពី @BotFather):</small>
+                    <input type="text" id="botToken" placeholder="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw">
+                    
+                    <small>Chat ID (ទទួលបានពី @userinfobot ឬ @RawDataBot):</small>
+                    <input type="text" id="chatId" placeholder="-1005090259958">
+                    
+                    <small>💡 ជំនួយ៖ Bot ត្រូវតែបានបញ្ចូលទៅក្នុង group/chat មុន</small>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <select id="sel-month" onchange="refreshTable()" class="bg-blue-800 text-xs border-none rounded px-2 outline-none cursor-pointer">
-                    <option value="January">January</option><option value="February">February</option>
-                    <option value="March">March</option><option value="April">April</option>
-                    <option value="May">May</option><option value="June">June</option>
-                    <option value="July">July</option><option value="August">August</option>
-                    <option value="September">September</option><option value="October">October</option>
-                    <option value="November">November</option><option value="December">December</option>
-                </select>
-                <select id="sel-year" onchange="refreshTable()" class="bg-blue-800 text-xs border-none rounded px-2 outline-none cursor-pointer">
-                    <option value="2026" selected>2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030">2030</option>
-                </select>
-                <button onclick="saveLocal()" class="bg-emerald-500 hover:bg-emerald-600 px-4 py-1.5 rounded text-xs font-bold transition">Save Data</button>
-                <button onclick="sendToTelegram()" class="bg-sky-500 hover:bg-sky-600 px-4 py-1.5 rounded text-xs font-bold transition">Send Telegram</button>
+
+            <div class="content-area" id="contentArea">
+                <div class="empty-state">
+                    <h3>សូមជ្រើសរើសថ្នាក់រៀន</h3>
+                    <p>Please Select Class</p>
+                    <p style="margin-top: 20px;">👈 ចុចលើថ្នាក់រៀនខាងឆ្វេងដើម្បីចាប់ផ្តើម</p>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-6 p-6">
-        
-        <aside class="w-full md:w-80 bg-white rounded-xl shadow-sm border border-slate-200 p-4 h-[85vh] overflow-y-auto no-print">
-            <h2 class="text-slate-400 text-[10px] font-bold uppercase mb-4 tracking-widest italic">បញ្ជីថ្នាក់រៀន / Classes</h2>
-            <div id="class-list" class="flex flex-col gap-1"></div>
-            
-            <div class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Telegram Settings</label>
-                <input id="tg-id" type="text" value="-1005090259958" class="w-full text-xs p-2 border rounded mt-1 mb-2 outline-none focus:ring-1 ring-blue-300">
-                <input id="tg-token" type="password" value="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw" class="w-full text-xs p-2 border rounded outline-none focus:ring-1 ring-blue-300">
-            </div>
-        </aside>
-
-        <main class="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b flex justify-between items-center bg-slate-50/50">
-                <div>
-                    <h2 id="display-class-name" class="text-2xl font-bold text-slate-800">Please Select Class</h2>
-                    <p id="display-date" class="text-slate-500 text-sm font-medium"></p>
-                </div>
-                <button onclick="selectAllPresent()" class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-200 transition no-print">
-                    ✅ Mark All Present
-                </button>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-100/50 text-slate-500 text-[10px] font-bold uppercase border-b">
-                            <th class="p-4 w-12 text-center">No.</th>
-                            <th class="p-4 w-20">ID</th>
-                            <th class="p-4">Student Name</th>
-                            <th class="p-4 w-16 text-center">Sex</th>
-                            <th class="p-4 text-center">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="student-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                </table>
-            </div>
-            <div id="empty-msg" class="p-20 text-center text-slate-300 font-medium italic">Select a class from the left sidebar to start.</div>
-        </main>
     </div>
 
     <script>
-        const allData = [
-            { className: "Nursery", students: [{id:"148", n:"បេរ៉េស ម៉ៃឃើស", g:"M"},{id:"144", n:"ហេង សន្តិភាព", g:"M"},{id:"157", n:"ដួង សុមេធា", g:"M"},{id:"183", n:"ថុង ហ្វុងម៉េង", g:"M"},{id:"158", n:"ពន្លក វិរសិទ្ធ", g:"M"},{id:"172", n:"រតនា សៀវលិ", g:"F"},{id:"180", n:"រ៉ាត់ ពេជ្រមរកត", g:"F"},{id:"178", n:"លីវទ្ធី ជុតិមា", g:"F"},{id:"184", n:"ហូ លីភីង", g:"-"},{id:"174", n:"វិច្ឆិកា មុន្នីទេពី", g:"F"},{id:"185", n:"យឹម ពុទ្ធិវង្ស", g:"M"},{id:"171", n:"សុង សិរីបុត្រ", g:"M"},{id:"147", n:"សុភ័ក្រ វីរបុត្រ", g:"M"},{id:"150", n:"វ៉េត នីរីតា", g:"F"},{id:"166", n:"លីណា ហុងស័ក្កិអធិភូ", g:"M"}] },
-            { className: "មត្តេយ្យទាប", students: [{id:"147", n:"សុភក្រ​​ វីរបុត្រ", g:"M"},{id:"166", n:"លីណា រ័ត្នហុងស័ក្កិអធិភូ", g:"M"},{id:"160", n:"ថូ សិទ្ធីយូណា", g:"F"},{id:"175", n:"ហេង ជ័រម៉ីង", g:"F"},{id:"-", n:"វ៉េត នីរីតា", g:"F"}] },
-            { className: "មត្តេយ្យកណ្តាល ១", students: [{id:"64", n:"ឃុន ទេពង្ស", g:"M"},{id:"121", n:"នឿន វឌ្ឍនា", g:"M"},{id:"128", n:"ពិសិទ្អ ច័ន្ទវឌ្ឃ", g:"M"},{id:"141", n:"ហេង សាជីង", g:"F"},{id:"132", n:"សុ បញ្ញា មុនិរាជ", g:"M"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"M"},{id:"173", n:"សាន្ត លីប៉េង", g:"M"},{id:"163", n:"អេង លីឆេង", g:"M"},{id:"179", n:"ចន្ថា វឌ្ឍនា", g:"M"},{id:"162", n:"យ៉ាន់ សុខឡេង", g:"M"}] },
-            { className: "មត្តេយ្យកណ្តាល ២", students: [{id:"139", n:"ហ៊ឺម ម៉ីអ៊ិ", g:"M"},{id:"146", n:"លន វេស្សភូ", g:"M"},{id:"102", n:"សំណាង វីរៈបុត្រ", g:"M"},{id:"67", n:"ឈឿន ប៊ុនធឿនពុទ្ធិ", g:"M"},{id:"181", n:"ឈន ចេស្ដា", g:"M"},{id:"87", n:"អ៊ុំ រតនាសិទ្ធីការ", g:"F"},{id:"113", n:"ស៊ីម សិទ្ធីការ", g:"F"},{id:"164", n:"អ៊ូសុវណ្ណ វេហា៍", g:"M"},{id:"177", n:"វាសនា ពេជ្រសុម៉ាលី", g:"F"},{id:"165", n:"លឹម លីម៉េងគ័ង្គ", g:"M"}] },
-            { className: "មត្តេយ្យខ្ពស់ ១", students: [{id:"29", n:"ខាន់ មុនីវល្លភា", g:"F"},{id:"101", n:"ឈុំ វីរ់សិទ្ធ", g:"M"},{id:"65", n:"និត សុធារ៉ា", g:"M"},{id:"78", n:"នី លីជីង", g:"F"},{id:"117", n:"ហ៊ុន រាណ្ណជេណស្ដា", g:"M"},{id:"47", n:"បុណ្ណជេ ជេននី", g:"F"},{id:"14", n:"ឃុន ទេពី", g:"F"},{id:"62", n:"រិទ្ធី ពិស្សុតសុក្រឹត", g:"M"},{id:"49", n:"ងិន ទៀនវិន", g:"M"},{id:"107", n:"សុភក្រ័ វរៈសិទ្ធ", g:"M"},{id:"170", n:"អុលវឿន ដាវីន", g:"F"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"F"},{id:"1", n:"ប៊ុនរីន ខេមរា", g:"M"}] },
-            { className: "មត្តេយ្យខ្ពស់ ២", students: [{id:"54", n:"យន់ លីហេង", g:"M"},{id:"75", n:"វិន បញ្ញាវ័ន្ត", g:"M"},{id:"90", n:"សូ រស្មីពនិតា", g:"F"},{id:"50", n:"សូយ រក្សា", g:"M"},{id:"0072", n:"អ៊ូ សុខអាមី", g:"F"},{id:"137", n:"សឿន ចាន់សុមេធា", g:"F"},{id:"176", n:"ប៉ឹម ម៉ីជូ", g:"F"},{id:"85", n:"សេរី ចន្ទវឌ្ឍនា", g:"M"},{id:"161", n:"លីម ហ៊ីប៉", g:"M"},{id:"55", n:"អ៊ា ជីងហ័រ", g:"F"},{id:"0079", n:"មិត្ត ម៉េងហេង", g:"M"},{id:"74", n:"ចាន់នី ស៊ូសាន់ណា", g:"F"}] },
-            { className: "ថ្នាក់ទី ១ (ព្រឹក)", students: [{id:"75", n:"ឆន វិរៈសិទ្ធ", g:"M"},{id:"47", n:"ជាឡិច កូលីន", g:"M"},{id:"92", n:"សុបញ្ញា សោម៉ា", g:"F"},{id:"83", n:"ភឺន ថិរាយុ", g:"M"},{id:"69", n:"លី ឆាយឈ័ន", g:"M"},{id:"77", n:"វុឌ្ឍី ដាវីកា", g:"F"},{id:"93", n:"អ៊ឹម រោចនា", g:"F"},{id:"72", n:"វង្ស ដារ៉ាវីន", g:"M"},{id:"95", n:"ចាវ វិនហាវ", g:"M"},{id:"80", n:"ងួន បញ្ញាពុទ្ធិស័ក្តិ", g:"M"}] },
-            { className: "ថ្នាក់ទី ១ (ល្ងាច)", students: [{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"M"},{id:"91", n:"ប៊ូ សាធុការ", g:"F"},{id:"82", n:"សេន យ៉ាស្មីនណា", g:"F"},{id:"85", n:"ដន សុភ័ណ្ឌម៉ូនីកា", g:"F"},{id:"78", n:"ស៊្រាង សៀវហ្វុង", g:"F"},{id:"73", n:"ហេង ម៉ីអ៊ិ", g:"F"},{id:"74", n:"អឿន ពៅវល័ក្ខ", g:"F"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"M"}] },
-            { className: "ថ្នាក់ទី ២ (ក)", students: [{id:"21", n:"ចន្ថា លីតា", g:"F"},{id:"20", n:"ពៅ សុខចិន", g:"M"},{id:"17", n:"ណារ៉ា ហេងលី", g:"M"},{id:"23", n:"សុខ សម្បត្តិ", g:"M"},{id:"22", n:"សុខ ដាលីស", g:"F"},{id:"29", n:"ស្រស់ រីហ្សា", g:"F"},{id:"41", n:"ប៉ុន រីយ៉ា", g:"F"}] },
-            { className: "ថ្នាក់ទី ២ (ខ)", students: [{id:"59", n:"អុង បញ្ញារ័ត្ន", g:"M"},{id:"31", n:"មិត្ត ម៉េងហួរ", g:"M"},{id:"14", n:"យស់ នរិន្ទ", g:"M"},{id:"33", n:"វង់ ពុទ្ធិតា", g:"F"},{id:"62", n:"សូយ បញ្ញា", g:"M"},{id:"40", n:"សេង សាណា", g:"F"},{id:"39", n:"ចន្ទ សុផាយ៉ាមេឃ", g:"M"},{id:"30", n:"ស៊នវីរៈ បញ្ញាទេពី", g:"F"},{id:"27", n:"ប៊ូ តាម៉ា", g:"M"},{id:"65", n:"កែវ មុន្នីឧត្តម", g:"M"},{id:"56", n:"វន្តវិន ថាណា", g:"F"},{id:"36", n:"ហាន ស៊ីវហ័រ", g:"F"}] },
-            { className: "ថ្នាក់ទី ៣", students: [{id:"9", n:"កែវ វីនសុឧត្តតារា", g:"F"},{id:"28", n:"ឈុនតា រតនៈខុនដូ", g:"F"},{id:"10", n:"យ៉ា ពេជ្រម៉ូនីកា", g:"F"},{id:"15", n:"លីម ពុទ្ធិរាជ", g:"M"},{id:"3", n:"ឡ ស៊ីវហ៊ួយ", g:"F"},{id:"2", n:"ឡាយ មុនិចិន្ដា", g:"F"},{id:"24", n:"អោក និសិ្សត", g:"M"},{id:"44", n:"ចំរើន ម៉ានីតា", g:"F"}] },
-            { className: "ថ្នាក់ទី ៤-៥", students: [{id:"1", n:"ឡាយ ភារ៉ាដាវីឌ", g:"M"},{id:"42", n:"វង្ស មុនីកញ្ចនា", g:"F"},{id:"43", n:"ពៅ សុនីតា", g:"F"},{id:"4", n:"ឡ សុវណ្ណហាន់ណា", g:"F"}] },
-            { className: "Foundation 1 (AM)", students: [{id:"-", n:"ឆាង ស៊ីងអាយ", g:"F"},{id:"-", n:"ស៊ីម សិទ្ធិកា", g:"F"},{id:"82", n:"រុន រស្មី", g:"M"},{id:"149", n:"ធី សុវណ្ណ សិទ្ធិកា", g:"F"},{id:"143", n:"ផន សុខហៀង", g:"M"},{id:"133", n:"សុទ្ធ លីនប្រុសសិទ្ធ", g:"M"},{id:"134", n:"អ៊ាប លីយីង", g:"F"},{id:"88", n:"ចំរើន ចន្ទឧត្តម", g:"M"},{id:"127", n:"ហម ចាន់បុរីរក្ស", g:"M"},{id:"182", n:"តាំង ហ៊ួយលីន", g:"F"}] },
-            { className: "Foundation 1 (PM)", students: [{id:"116", n:"ឆន ម៉េងស៊ីន", g:"M"},{id:"58", n:"ងួន គីមហាប់", g:"M"},{id:"145", n:"ឆាយ ភីងអ៊ីង", g:"F"},{id:"125", n:"បញ្ញា ភេត្រា", g:"F"},{id:"90", n:"ចំរើន រឿនរឹទ្ធិរាជ", g:"M"},{id:"159", n:"ថន ស៊ីហ្គ្សិច", g:"F"}] },
-            { className: "Foundation 2 (A)", students: [{id:"86", n:"ធេង ម៉េងលី", g:"M"},{id:"70", n:"រ័ត្ន រ៉ាថេប", g:"M"}] },
-            { className: "Foundation 2 (Narein)", students: [{id:"68", n:"សុង រឹទ្ធស័ក្ក", g:"M"},{id:"66", n:"ប៊ុនឡេង អ៊ៃដឹក", g:"M"},{id:"67", n:"ភោគ ស្ពីតឌី", g:"M"}] },
-            { className: "Level 1 (SreyNet)", students: [{id:"62", n:"ឈូក ឈិនឡុង", g:"M"},{id:"64", n:"លាង វឌ្ឃនធនុ", g:"M"}] },
-            { className: "Level 2 (SreyNet)", students: [{id:"48", n:"សុភក្ដិ ទិត្រដាណា", g:"F"},{id:"63", n:"នឿន វឌ្ឍនះ", g:"M"},{id:"49", n:"សុភក្ដិ រតន", g:"M"},{id:"61", n:"ផល សុវណ្ណ", g:"M"},{id:"53", n:"ហុង សិទ្ធិណាល់", g:"M"},{id:"55", n:"ធេង ជូលីញ", g:"F"},{id:"1", n:"ឡាយ ភារ៉ាដាវីឌ", g:"M"},{id:"4", n:"ឡ សុវណ្ណហាន់ណា", g:"F"}] }
-        ];
+        // ទិន្នន័យសិស្សពិតប្រាកដ / Real Student Data
+        const studentData = {
+            'ថ្នាក់មត្តេយ្យទាប': [
+                { id: '64', name: 'ឃុន ទេពង្ស', nameEn: 'Student64', sex: 'M' },
+                { id: '121', name: 'នឿន វឌ្ឍនា', nameEn: 'Student121', sex: 'M' },
+                { id: '128', name: 'ពិសិទ្អ ច័ន្ទវឌ្ឃ', nameEn: 'Student128', sex: 'M' },
+                { id: '141', name: 'ហេង សាជីង', nameEn: 'Student141', sex: 'F' },
+                { id: '132', name: 'សុ បញ្ញា មុនិរាជ', nameEn: 'Student132', sex: 'M' },
+                { id: '67', name: 'ឈឿន ប៊ុនធឿនពុទ្ធិ', nameEn: 'Student67', sex: 'M' },
+                { id: '173', name: 'សាន្ត លីប៉េង', nameEn: 'Student173', sex: 'M' },
+                { id: '163', name: 'អេង លីឆេង', nameEn: 'Student163', sex: 'M' },
+                { id: '179', name: 'ចន្ថា វឌ្ឍនា', nameEn: 'Student179', sex: 'M' },
+                { id: '162', name: 'យ៉ាន់ សុខឡេង', nameEn: 'Student162', sex: 'M' },
+            ],
+            'ថ្នាក់មតេ្ដយ្យកម្រិតមធ្យម២': [
+                { id: '139', name: 'ហ៊ឺម ម៉ីអ៊ិ', nameEn: 'Student139', sex: 'M' },
+                { id: '146', name: 'លន វេស្សភូ', nameEn: 'Student146', sex: 'M' },
+                { id: '102', name: 'សំណាង វីរៈបុត្រ', nameEn: 'Student102', sex: 'M' },
+                { id: '67', name: 'ឈឿន ប៊ុនធឿនពុទ្ធិ', nameEn: 'Student67', sex: 'M' },
+                { id: '181', name: 'ឈន ចេស្ដា', nameEn: 'Student181', sex: 'M' },
+                { id: '87', name: 'អ៊ុំ រតនាសិទ្ធីការ', nameEn: 'Student87', sex: 'F' },
+                { id: '113', name: 'ស៊ីម សិទ្ធីការ', nameEn: 'Student113', sex: 'F' },
+                { id: '164', name: 'អ៊ូសុវណ្ណ វេហា៍', nameEn: 'Student164', sex: 'M' },
+                { id: '177', name: 'វាសនា ពេជ្រសុម៉ាលី', nameEn: 'Student177', sex: 'F' },
+                { id: '165', name: 'លឹម លីម៉េងគ័ង្គ', nameEn: 'Student165', sex: 'M' },
+            ],
+            'ថ្នាក់មតេ្ដយ្យកម្រិតមធ្យម១': [
+                { id: '29', name: 'ខាន់ មុនីវល្លភា', nameEn: 'Student29', sex: 'F' },
+                { id: '101', name: 'ឈុំ វីរ់សិទ្ធ', nameEn: 'Student101', sex: 'M' },
+                { id: '65', name: 'និត សុធារ៉ា', nameEn: 'Student65', sex: 'M' },
+                { id: '78', name: 'នី លីជីង', nameEn: 'Student78', sex: 'F' },
+                { id: '117', name: 'ហ៊ុន រាណ្ណជេណស្ដា', nameEn: 'Student117', sex: 'M' },
+                { id: '47', name: 'បុណ្ណជេ ជេននី', nameEn: 'Student47', sex: 'F' },
+                { id: '14', name: 'ឃុន ទេពី', nameEn: 'Student14', sex: 'F' },
+                { id: '62', name: 'រិទ្ធី ពិស្សុតសុក្រឹត', nameEn: 'Student62', sex: 'M' },
+                { id: '49', name: 'ងិន ទៀនវិន', nameEn: 'Student49', sex: 'M' },
+                { id: '107', name: 'សុភក្រ័ វរៈសិទ្ធ', nameEn: 'Student107', sex: 'M' },
+                { id: '170', name: 'អុលវឿន ដាវីន', nameEn: 'Student170', sex: 'F' },
+                { id: '137', name: 'សឿន ចាន់សុមេធា', nameEn: 'Student137', sex: 'F' },
+                { id: '1', name: 'ប៊ុនរីន ខេមរា', nameEn: 'Student1', sex: 'M' },
+            ],
+            'ថ្នាក់មតេ្ដយ្យកម្រិតខ្ពស់១': [
+                { id: '54', name: 'យន់ លីហេង', nameEn: 'Student54', sex: 'M' },
+                { id: '75', name: 'វិន បញ្ញាវ័ន្ត', nameEn: 'Student75', sex: 'M' },
+                { id: '90', name: 'សូ រស្មីពនិតា', nameEn: 'Student90', sex: 'F' },
+                { id: '50', name: 'សូយ រក្សា', nameEn: 'Student50', sex: 'M' },
+                { id: '0072', name: 'អ៊ូ សុខអាមី', nameEn: 'Student0072', sex: 'F' },
+                { id: '137', name: 'សឿន ចាន់សុមេធា', nameEn: 'Student137', sex: 'F' },
+                { id: '176', name: 'ប៉ឹម ម៉ីជូ', nameEn: 'Student176', sex: 'F' },
+                { id: '85', name: 'សេរី ចន្ទវឌ្ឍនា', nameEn: 'Student85', sex: 'M' },
+                { id: '161', name: 'លីម ហ៊ីប៉', nameEn: 'Student161', sex: 'M' },
+                { id: '55', name: 'អ៊ា ជីងហ័រ', nameEn: 'Student55', sex: 'F' },
+                { id: '0079', name: 'មិត្ត ម៉េងហេង', nameEn: 'Student0079', sex: 'M' },
+                { id: '74', name: 'ចាន់នី​ ស៊ូសាន់ណា', nameEn: 'Student74', sex: 'F' },
+            ],
+            'ថ្នាក់មតេ្ដយ្យកម្រិតខ្ពស់': [
+                { id: '75', name: 'ឆន វិរៈសិទ្ធ', nameEn: 'Student75', sex: 'M' },
+                { id: '47', name: 'ជាឡិច  កូលីន', nameEn: 'Student47', sex: 'M' },
+                { id: '92', name: 'សុបញ្ញា សោម៉ា', nameEn: 'Student92', sex: 'F' },
+                { id: '83', name: 'ភឺន ថិរាយុ', nameEn: 'Student83', sex: 'M' },
+                { id: '69', name: 'លី ឆាយឈ័ន', nameEn: 'Student69', sex: 'M' },
+                { id: '77', name: 'វុឌ្ឍី ដាវីកា', nameEn: 'Student77', sex: 'F' },
+                { id: '93', name: 'អ៊ឹម រោចនា', nameEn: 'Student93', sex: 'F' },
+                { id: '72', name: 'វង្ស ដារ៉ាវីន', nameEn: 'Student72', sex: 'M' },
+                { id: '95', name: 'ចាវ វិនហាវ', nameEn: 'Student95', sex: 'M' },
+                { id: '80', name: 'ងួន បញ្ញាពុទ្ធិស័ក្តិ', nameEn: 'Student80', sex: 'M' },
+            ],
+            'ថ្នាក់ទី១': [
+                { id: '88', name: 'ចំរើន ចន្ទឧត្តម', nameEn: 'Student88', sex: 'M' },
+                { id: '91', name: 'ប៊ូ  សាធុការ', nameEn: 'Student91', sex: 'F' },
+                { id: '82', name: 'សេន យ៉ាស្មីនណា', nameEn: 'Student82', sex: 'F' },
+                { id: '85', name: 'ដន សុភ័ណ្ឌម៉ូនីកា', nameEn: 'Student85', sex: 'F' },
+                { id: '78', name: 'ស៊្រាង សៀវហ្វុង', nameEn: 'Student78', sex: 'F' },
+                { id: '73', name: 'ហេង ម៉ីអ៊ិ', nameEn: 'Student73', sex: 'F' },
+                { id: '74', name: 'អឿន ពៅវល័ក្ខ', nameEn: 'Student74', sex: 'F' },
+                { id: '70', name: 'រ័ត្ន រ៉ាថេប', nameEn: 'Student70', sex: 'M' },
+            ],
+            'ថ្នាក់ទី១,១': [
+                { id: '21', name: 'ចន្ថា លីតា', nameEn: 'Student21', sex: 'F' },
+                { id: '20', name: 'ពៅ  សុខចិន', nameEn: 'Student20', sex: 'M' },
+                { id: '17', name: 'ណារ៉ា ហេងលី', nameEn: 'Student17', sex: 'M' },
+                { id: '23', name: 'សុខ  សម្បត្តិ', nameEn: 'Student23', sex: 'M' },
+                { id: '22', name: 'សុខ  ដាលីស', nameEn: 'Student22', sex: 'F' },
+                { id: '29', name: 'ស្រស់  រីហ្សា', nameEn: 'Student29', sex: 'F' },
+                { id: '41', name: 'ប៉ុន រីយ៉ា', nameEn: 'Student41', sex: 'F' },
+            ],
+            'ថ្នាក់ទី២': [
+                { id: '59', name: 'អុង បញ្ញារ័ត្ន', nameEn: 'Student59', sex: 'M' },
+                { id: '31', name: 'មិត្ត  ម៉េងហួរ', nameEn: 'Student31', sex: 'M' },
+                { id: '14', name: 'យស់  នរិន្ទ', nameEn: 'Student14', sex: 'M' },
+                { id: '33', name: 'វង់  ពុទ្ធិតា', nameEn: 'Student33', sex: 'F' },
+                { id: '62', name: 'សូយ បញ្ញា', nameEn: 'Student62', sex: 'M' },
+                { id: '40', name: 'សេង សាណា', nameEn: 'Student40', sex: 'F' },
+                { id: '39', name: 'ចន្ទ  សុផាយ៉ាមេឃ', nameEn: 'Student39', sex: 'M' },
+                { id: '30', name: 'ស៊នវីរៈ បញ្ញាទេពី', nameEn: 'Student30', sex: 'F' },
+                { id: '27', name: 'ប៊ូ  តាម៉ា', nameEn: 'Student27', sex: 'M' },
+                { id: '65', name: 'កែវ មុន្នីឧត្តម', nameEn: 'Student65', sex: 'M' },
+                { id: '56', name: 'វន្តវិន ថាណា', nameEn: 'Student56', sex: 'F' },
+                { id: '36', name: 'ហាន ស៊ីវហ័រ', nameEn: 'Student36', sex: 'F' },
+            ],
+            'ថ្នាក់ទី២,១': [
+                { id: '9', name: 'កែវ  វីនសុឧត្តតារា', nameEn: 'Student9', sex: 'F' },
+                { id: '28', name: 'ឈុនតា រតនៈខុនដូ', nameEn: 'Student28', sex: 'F' },
+                { id: '10', name: 'យ៉ា ពេជ្រម៉ូនីកា', nameEn: 'Student10', sex: 'F' },
+                { id: '15', name: 'លីម ពុទ្ធិរាជ', nameEn: 'Student15', sex: 'M' },
+                { id: '3', name: 'ឡ ស៊ីវហ៊ួយ', nameEn: 'Student3', sex: 'F' },
+                { id: '2', name: 'ឡាយ មុនិចិន្ដា', nameEn: 'Student2', sex: 'F' },
+                { id: '24', name: 'អោក និសិ្សត', nameEn: 'Student24', sex: 'M' },
+                { id: '44', name: 'ចំរើន ម៉ានីតា', nameEn: 'Student44', sex: 'F' },
+            ],
+            'ថ្នាក់ទី៣': [
+                { id: '1', name: 'ឡាយ  ភារ៉ាដាវីឌ', nameEn: 'Student1', sex: 'M' },
+                { id: '42', name: 'វង្ស មុនីកញ្ចនា', nameEn: 'Student42', sex: 'F' },
+                { id: '43', name: 'ពៅ សុនីតា', nameEn: 'Student43', sex: 'F' },
+                { id: '4', name: 'ឡ សុវណ្ណហាន់ណា', nameEn: 'Student4', sex: 'F' },
+            ],
+            'ថ្នាក់ទី៤ ៥': [
+                { id: '82', name: 'រុន រស្មី', nameEn: 'Student82', sex: 'M' },
+                { id: '149', name: 'ធី សុវណ្ណ សិទ្ធិកា', nameEn: 'Student149', sex: 'F' },
+                { id: '143', name: 'ផន  សុខហៀង', nameEn: 'Student143', sex: 'M' },
+                { id: '133', name: 'សុទ្ធ លីនប្រុសសិទ្ធ', nameEn: 'Student133', sex: 'M' },
+                { id: '134', name: 'អ៊ាប លីយីង', nameEn: 'Student134', sex: 'F' },
+                { id: '88', name: 'ចំរើន ចន្ទឧត្តម', nameEn: 'Student88', sex: 'M' },
+                { id: '127', name: 'ហម ចាន់បុរីរក្ស', nameEn: 'Student127', sex: 'M' },
+                { id: '182', name: 'តាំង ហ៊ួយលីន', nameEn: 'Student182', sex: 'F' },
+            ],
+            'Fount1 mooning': [
+                { id: '116', name: 'ឆន ម៉េងស៊ីន', nameEn: 'Student116', sex: 'M' },
+                { id: '58', name: 'ងួន គីមហាប់', nameEn: 'Student58', sex: 'M' },
+                { id: '145', name: 'ឆាយ ភីងអ៊ីង', nameEn: 'Student145', sex: 'F' },
+                { id: '125', name: 'បញ្ញា ភេត្រា', nameEn: 'Student125', sex: 'F' },
+                { id: '90', name: 'ចំរើន រឿនរឹទ្ធិរាជ', nameEn: 'Student90', sex: 'M' },
+                { id: '159', name: 'ថន ស៊ីហ្គ្សិច', nameEn: 'Student159', sex: 'F' },
+            ],
+            'Fount1 Evening': [
+                { id: '148', name: 'បេរ៉េស ម៉ៃឃើស', nameEn: 'Student148', sex: 'M' },
+                { id: '144', name: 'ហេង សន្តិភាព', nameEn: 'Student144', sex: 'M' },
+                { id: '157', name: 'ដួង  សុមេធា', nameEn: 'Student157', sex: 'M' },
+                { id: '183', name: 'ថុង ហ្វុងម៉េង', nameEn: 'Student183', sex: 'M' },
+                { id: '158', name: 'ពន្លក វិរសិទ្ធ', nameEn: 'Student158', sex: 'M' },
+                { id: '172', name: 'រតនា សៀវលិ', nameEn: 'Student172', sex: 'F' },
+                { id: '180', name: 'រ៉ាត់ ពេជ្រមរកត', nameEn: 'Student180', sex: 'F' },
+                { id: '178', name: 'លីវទ្ធី ជុតិមា', nameEn: 'Student178', sex: 'F' },
+                { id: '184', name: 'ហូ លីភីង', nameEn: 'Student184', sex: 'M' },
+                { id: '174', name: 'វិច្ឆិកា មុន្នីទេពី', nameEn: 'Student174', sex: 'F' },
+                { id: '185', name: 'យឹម ពុទ្ធិវង្ស', nameEn: 'Student185', sex: 'M' },
+                { id: '171', name: 'សុង សិរីបុត្រ', nameEn: 'Student171', sex: 'M' },
+                { id: '147', name: 'សុភ័ក្រ វីរបុត្រ', nameEn: 'Student147', sex: 'M' },
+                { id: '150', name: 'វ៉េត នីរីតា', nameEn: 'Student150', sex: 'F' },
+                { id: '166', name: 'លីណា ហុងស័ក្កិអធិភូ', nameEn: 'Student166', sex: 'M' },
+            ],
+            'Fount2': [
+                { id: '86', name: 'ធេង ម៉េងលី', nameEn: 'Student86', sex: 'M' },
+                { id: '70', name: 'រ័ត្ន រ៉ាថេប', nameEn: 'Student70', sex: 'M' },
+            ],
+            'Fount2.10.narein': [
+                { id: '68', name: 'សុង រឹទ្ធស័ក្ក', nameEn: 'Student68', sex: 'M' },
+                { id: '66', name: 'ប៊ុនឡេង អ៊ៃដឹក', nameEn: 'Student66', sex: 'M' },
+                { id: '67', name: 'ភោគ ស្ពីតឌី', nameEn: 'Student67', sex: 'M' },
+            ],
+            'Level1': [
+                { id: '62', name: 'ឈូក ឈិនឡុង', nameEn: 'Student62', sex: 'M' },
+                { id: '64', name: 'លាង វឌ្ឃនធនុ', nameEn: 'Student64', sex: 'M' },
+            ],
+            'Nursery': [
+                { id: '48', name: 'សុភក្ដិ ទិត្រដាណា', nameEn: 'Student48', sex: 'F' },
+                { id: '63', name: 'នឿន វឌ្ឍនះ', nameEn: 'Student63', sex: 'M' },
+                { id: '49', name: 'សុភក្ដិ រតន', nameEn: 'Student49', sex: 'M' },
+                { id: '61', name: 'ផល​ សុវណ្ណ', nameEn: 'Student61', sex: 'M' },
+                { id: '53', name: 'ហុង សិទ្ធិណាល់', nameEn: 'Student53', sex: 'M' },
+                { id: '55', name: 'ធេង ជូលីញ', nameEn: 'Student55', sex: 'F' },
+                { id: '1', name: 'ឡាយ ភារ៉ាដាវីឌ', nameEn: 'Student1', sex: 'M' },
+                { id: '4', name: 'ឡ សុវណ្ណហាន់ណា', nameEn: 'Student4', sex: 'F' },
+            ],
+            'Level2': [
+                { id: '147', name: 'សុភក្រ វីរបុត្រ', nameEn: 'Student147', sex: 'M' },
+                { id: '166', name: 'លីណា រ័ត្នហុងស័ក្កិអធិភូ', nameEn: 'Student166', sex: 'M' },
+                { id: '160', name: 'ថូ សិទ្ធីយូណា', nameEn: 'Student160', sex: 'F' },
+                { id: '175', name: 'ហេង ជ័រម៉ីង', nameEn: 'Student175', sex: 'F' },
+            ],
+        };
 
-        let currentIdx = -1;
+        let currentClass = null;
+        let attendanceData = {};
 
-        function init() {
-            const list = document.getElementById('class-list');
-            allData.forEach((c, i) => {
-                const btn = document.createElement('button');
-                btn.className = "text-left px-3 py-2 rounded text-[13px] font-semibold hover:bg-slate-50 transition-all flex justify-between";
-                btn.innerHTML = `<span>${c.className}</span> <span class="text-slate-400 text-[10px]">${c.students.length}</span>`;
-                btn.onclick = () => {
-                    currentIdx = i;
-                    document.querySelectorAll('#class-list button').forEach(b => b.classList.remove('active-class'));
-                    btn.classList.add('active-class');
-                    refreshTable();
-                };
-                list.appendChild(btn);
-            });
+        // ផ្ទុកទិន្នន័យពី LocalStorage / Load data from LocalStorage
+        function loadFromStorage() {
+            const saved = localStorage.getItem('mikidsAttendance');
+            if (saved) {
+                attendanceData = JSON.parse(saved);
+            }
+
+            const savedToken = localStorage.getItem('telegramBotToken');
+            const savedChatId = localStorage.getItem('telegramChatId');
+            
+            if (savedToken) document.getElementById('botToken').value = savedToken;
+            if (savedChatId) document.getElementById('chatId').value = savedChatId;
         }
 
-        function selectAllPresent() {
-            if (currentIdx === -1) return;
-            const data = allData[currentIdx];
-            data.students.forEach((_, i) => {
-                document.querySelector(`input[name="s-${i}"][value="P"]`).checked = true;
-            });
+        // កំណត់ខែនិងឆ្នាំបច្ចុប្បន្ន / Set current month and year
+        function setCurrentDate() {
+            const now = new Date();
+            document.getElementById('monthSelect').value = now.getMonth();
+            document.getElementById('yearSelect').value = now.getFullYear();
         }
 
-        function refreshTable() {
-            if (currentIdx === -1) return;
-            document.getElementById('empty-msg').style.display = 'none';
-            const data = allData[currentIdx];
-            const month = document.getElementById('sel-month').value;
-            const year = document.getElementById('sel-year').value;
-            document.getElementById('display-class-name').innerText = data.className;
-            document.getElementById('display-date').innerText = `Period: ${month} ${year}`;
+        // ជ្រើសរើសថ្នាក់រៀន / Select class
+        function selectClass(className) {
+            currentClass = className;
             
-            const storageKey = `mikids_v9_${data.className}_${month}_${year}`;
-            const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
+            // Update active class
+            document.querySelectorAll('.class-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayStudents(className);
+        }
 
-            const tbody = document.getElementById('student-table-body');
-            tbody.innerHTML = '';
+        // បង្ហាញបញ្ជីសិស្ស / Display students
+        function displayStudents(className) {
+            const students = studentData[className];
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const dateKey = `${year}-${month}-${className}`;
             
-            data.students.forEach((s, i) => {
-                const status = saved[s.n] || 'P';
-                tbody.innerHTML += `
+            let html = `
+                <div class="controls">
+                    <h2 style="color: #667eea; margin-bottom: 15px;">📋 ${className}</h2>
+                    <button class="btn-mark-all" onclick="markAllPresent()">✅ សម្គាល់ទាំងអស់មានវត្តមាន / Mark All Present</button>
+                </div>
+                
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>លេខរៀង / No.</th>
+                            <th>លេខសម្គាល់ / ID</th>
+                            <th>ឈ្មោះសិស្ស / Student Name</th>
+                            <th>ភេទ / Sex</th>
+                            <th>ស្ថានភាព / Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            students.forEach((student, index) => {
+                const studentKey = `${dateKey}-${student.id}`;
+                const currentStatus = attendanceData[studentKey] || 'មានវត្តមាន';
+                
+                html += `
                     <tr>
-                        <td class="p-4 text-center text-slate-400 font-mono text-[10px]">${i+1}</td>
-                        <td class="p-4 font-bold text-blue-800 text-xs">${s.id}</td>
-                        <td class="p-4 font-semibold text-slate-700">${s.n}</td>
-                        <td class="p-4 text-center text-xs font-bold">${s.g}</td>
-                        <td class="p-4">
-                            <div class="flex justify-center gap-6">
-                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="s-${i}" value="P" ${status==='P'?'checked':''} class="radio-p w-4 h-4 accent-emerald-500"> <span class="text-[11px]">មក(✅)</span></label>
-                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="s-${i}" value="L" ${status==='L'?'checked':''} class="radio-l w-4 h-4 accent-amber-500"> <span class="text-[11px]">ច្បាប់(P)</span></label>
-                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="s-${i}" value="A" ${status==='A'?'checked':''} class="radio-a w-4 h-4 accent-red-500"> <span class="text-[11px]">អវត្តមាន(A)</span></label>
-                            </div>
+                        <td>${index + 1}</td>
+                        <td>${student.id}</td>
+                        <td>${student.name} / ${student.nameEn}</td>
+                        <td>${student.sex}</td>
+                        <td>
+                            <select class="status-select status-${currentStatus === 'មានវត្តមាន' ? 'present' : currentStatus === 'អវត្តមាន' ? 'absent' : 'permission'}" 
+                                    onchange="updateStatus('${student.id}', this.value)">
+                                <option value="មានវត្តមាន" ${currentStatus === 'មានវត្តមាន' ? 'selected' : ''}>✅ មានវត្តមាន / Present</option>
+                                <option value="អវត្តមាន" ${currentStatus === 'អវត្តមាន' ? 'selected' : ''}>❌ អវត្តមាន / Absent</option>
+                                <option value="ច្បាប់" ${currentStatus === 'ច្បាប់' ? 'selected' : ''}>📋 ច្បាប់ / Permission</option>
+                            </select>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
             });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('contentArea').innerHTML = html;
         }
 
-        function saveLocal() {
-            if (currentIdx === -1) return alert("Select a class!");
-            const data = allData[currentIdx];
-            const month = document.getElementById('sel-month').value;
-            const year = document.getElementById('sel-year').value;
-            const key = `mikids_v9_${data.className}_${month}_${year}`;
-            let obj = {};
-            data.students.forEach((s, i) => { obj[s.n] = document.querySelector(`input[name="s-${i}"]:checked`).value; });
-            localStorage.setItem(key, JSON.stringify(obj));
-            alert("Attendance saved!");
+        // បន្ទាន់ស្ថានភាព / Update status
+        function updateStatus(studentId, status) {
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const dateKey = `${year}-${month}-${currentClass}`;
+            const studentKey = `${dateKey}-${studentId}`;
+            
+            attendanceData[studentKey] = status;
+            
+            // Update select styling
+            event.target.className = `status-select status-${status === 'មានវត្តមាន' ? 'present' : status === 'អវត្តមាន' ? 'absent' : 'permission'}`;
         }
 
+        // សម្គាល់ទាំងអស់មានវត្តមាន / Mark all present
+        function markAllPresent() {
+            if (!currentClass) return;
+            
+            const students = studentData[currentClass];
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const dateKey = `${year}-${month}-${currentClass}`;
+            
+            students.forEach(student => {
+                const studentKey = `${dateKey}-${student.id}`;
+                attendanceData[studentKey] = 'មានវត្តមាន';
+            });
+            
+            displayStudents(currentClass);
+            showAlert('success', '✅ បានសម្គាល់សិស្សទាំងអស់មានវត្តមាន / All students marked as present!');
+        }
+
+        // រក្សាទុកទិន្នន័យ / Save data
+        function saveData() {
+            localStorage.setItem('mikidsAttendance', JSON.stringify(attendanceData));
+            
+            const botToken = document.getElementById('botToken').value.trim();
+            const chatId = document.getElementById('chatId').value.trim();
+            
+            if (botToken) localStorage.setItem('telegramBotToken', botToken);
+            if (chatId) localStorage.setItem('telegramChatId', chatId);
+            
+            showAlert('success', '💾 ទិន្នន័យត្រូវបានរក្សាទុកដោយជោគជ័យ! / Data saved successfully!');
+        }
+
+        // ផ្ញើសារទៅ Telegram / Send to Telegram
         async function sendToTelegram() {
-            if (currentIdx === -1) return alert("Select a class!");
-            const token = document.getElementById('tg-token').value;
-            const cid = document.getElementById('tg-id').value;
-            const data = allData[currentIdx];
-            const month = document.getElementById('sel-month').value;
+            const botToken = document.getElementById('botToken').value.trim();
+            const chatId = document.getElementById('chatId').value.trim();
 
-            let abs = [], lvs = [], pCount = 0;
-            data.students.forEach((s, i) => {
-                const val = document.querySelector(`input[name="s-${i}"]:checked`).value;
-                if(val === 'P') pCount++;
-                else if(val === 'L') lvs.push(s.n);
-                else abs.push(s.n);
+            // ពិនិត្យមើល Bot Token និង Chat ID
+            if (!botToken || !chatId) {
+                showAlert('error', '❌ សូមបំពេញ Bot Token និង Chat ID ជាមុនសិន! / Please fill in Bot Token and Chat ID first!');
+                return;
+            }
+
+            if (!currentClass) {
+                showAlert('error', '❌ សូមជ្រើសរើសថ្នាក់រៀនជាមុនសិន! / Please select a class first!');
+                return;
+            }
+
+            // បង្កើតរបាយការណ៍ / Create report
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const monthNames = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+            const dateKey = `${year}-${month}-${currentClass}`;
+            
+            const students = studentData[currentClass];
+            let presentCount = 0;
+            let absentCount = 0;
+            let permissionCount = 0;
+            let absentStudents = [];
+            let permissionStudents = [];
+            
+            // រាប់ចំនួននិងដាក់ក្នុងបញ្ជី
+            students.forEach((student) => {
+                const studentKey = `${dateKey}-${student.id}`;
+                const status = attendanceData[studentKey] || 'មានវត្តមាន';
+                
+                if (status === 'មានវត្តមាន') {
+                    presentCount++;
+                } else if (status === 'អវត្តមាន') {
+                    absentCount++;
+                    absentStudents.push(student);
+                } else {
+                    permissionCount++;
+                    permissionStudents.push(student);
+                }
             });
 
-            let msg = `🔔 *REPORT: ${data.className}*\n📅 Month: *${month}*\n`;
-            msg += `━━━━━━━━━━━━━━━\n✅ Present: ${pCount}\n🟠 Leave: ${lvs.length}\n🔴 Absent: ${abs.length}\n`;
-            if(abs.length > 0) msg += `\n❌ *Absents:*\n${abs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
-            if(lvs.length > 0) msg += `\n\n📝 *Leaves:*\n${lvs.map((n, i) => (i+1)+'. '+n).join('\n')}`;
+            // ពិនិត្យថាតើមានសិស្សអវត្តមានឬច្បាប់ទេ
+            if (absentCount === 0 && permissionCount === 0) {
+                showAlert('success', '✅ អបអរសាទរ! សិស្សទាំងអស់មានវត្តមានគ្រប់គ្នា! / Congratulations! All students are present!');
+                return;
+            }
+            
+            let message = `⚠️ របាយការណ៍សិស្សអវត្តមាន\nABSENT STUDENTS REPORT\n`;
+            message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+            message += `📚 ថ្នាក់ / Class: ${currentClass}\n`;
+            message += `📅 ថ្ងៃ / Date: ${new Date().toLocaleDateString('km-KH')}\n`;
+            message += `📅 ខែ / Month: ${monthNames[month]} ${year}\n`;
+            message += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
 
-            const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({chat_id: cid, text: msg, parse_mode: 'Markdown'})
-            });
-            if(res.ok) alert("Report sent!");
-            else alert("Error sending message. Check Chat ID.");
+            // បញ្ជីសិស្សអវត្តមាន
+            if (absentStudents.length > 0) {
+                message += `❌ សិស្សអវត្តមាន (${absentCount} នាក់):\n`;
+                absentStudents.forEach((student, index) => {
+                    message += `   ${index + 1}. ${student.name} (${student.nameEn})\n`;
+                    message += `      ID: ${student.id} | Sex: ${student.sex}\n`;
+                });
+                message += `\n`;
+            }
+
+            // បញ្ជីសិស្សច្បាប់
+            if (permissionStudents.length > 0) {
+                message += `📋 សិស្សសុំច្បាប់ (${permissionCount} នាក់):\n`;
+                permissionStudents.forEach((student, index) => {
+                    message += `   ${index + 1}. ${student.name} (${student.nameEn})\n`;
+                    message += `      ID: ${student.id} | Sex: ${student.sex}\n`;
+                });
+                message += `\n`;
+            }
+
+            message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+            message += `📈 សង្ខេប / SUMMARY:\n`;
+            message += `✅ មានវត្តមាន: ${presentCount} នាក់\n`;
+            message += `❌ អវត្តមាន: ${absentCount} នាក់\n`;
+            message += `📋 ច្បាប់: ${permissionCount} នាក់\n`;
+            message += `👥 សរុប: ${students.length} នាក់\n`;
+            message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+            message += `🏫 MIKIDS Attendance System\n`;
+            message += `⏰ ${new Date().toLocaleString('km-KH')}`;
+
+            // ផ្ញើសារទៅ Telegram
+            showAlert('info', '⏳ កំពុងផ្ញើសារទៅ Telegram... / Sending message to Telegram...');
+
+            try {
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    showAlert('success', `✅ បានផ្ញើសារទៅ Telegram ដោយជោគជ័យ! / Message sent to Telegram successfully!\n\n📊 សិស្សអវត្តមាន: ${absentCount} នាក់\n📋 សិស្សសុំច្បាប់: ${permissionCount} នាក់`);
+                } else {
+                    console.error('Telegram API Error:', data);
+                    showAlert('error', `❌ កំហុស: ${data.description || 'មិនអាចផ្ញើសារបាន'} / Error: ${data.description || 'Cannot send message'}\n\nសូមពិនិត្យ:\n- Bot Token ត្រឹមត្រូវ?\n- Chat ID ត្រឹមត្រូវ?\n- Bot បានបញ្ចូលក្នុង chat ហើយឬនៅ?\n- Bot មានសិទ្ធិផ្ញើសារ?`);
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                showAlert('error', `❌ កំហុសបណ្តាញ / Network Error: ${error.message}\n\nសូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក`);
+            }
         }
-        init();
+
+        // បង្ហាញសារជូនដំណឹង / Show alert
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = message;
+            
+            const contentArea = document.getElementById('contentArea');
+            contentArea.insertBefore(alertDiv, contentArea.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // ចាប់ផ្តើមកម្មវិធី / Initialize app
+        window.onload = function() {
+            setCurrentDate();
+            loadFromStorage();
+        };
     </script>
 </body>
 </html>
