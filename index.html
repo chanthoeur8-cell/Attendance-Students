@@ -615,15 +615,6 @@
                         </button>
                     </div>
 
-                    <!-- Telegram Config -->
-                    <div class="telegram-config">
-                        <h4>⚙️ តំឡើង Telegram</h4>
-                        <input type="text" id="botToken" placeholder="Bot Token" value="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw">
-                        <input type="text" id="chatId" placeholder="Chat ID" value="-1005090259958">
-                    </div>
-                </div>
-            </div>
-
             <!-- Main Content Area -->
             <div class="content-area" id="contentArea">
                 <div class="empty-state">
@@ -1051,8 +1042,8 @@
         }
 
         function saveTelegramConfig() {
-            const botToken = document.getElementById('botToken').value.trim();
-            const chatId = document.getElementById('chatId').value.trim();
+            const botToken = document.getElementById('8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw').value.trim();
+            const chatId = document.getElementById('-1005090259958').value.trim();
             
             localStorage.setItem('telegram_bot_token', botToken);
             localStorage.setItem('telegram_chat_id', chatId);
@@ -1149,7 +1140,7 @@
             students.forEach((student, index) => {
                 const key = getAttendanceKey(currentClass, student.id);
                 const status = attendanceData[key] || 'present';
-                const statusKh = status === 'present' ? 'មានវត្តមាន(present)' : status === 'absent' ? 'អវត្តមាន(Absent)' : 'ច្បាប់(Permission)';
+                const statusKh = status === 'present' ? '✔️' : status === 'absent' ? 'A' : 'P';
                 
                 csv += `${index + 1},${student.id},${student.name},${student.sex},${statusKh}\n`;
             });
@@ -1177,3 +1168,4 @@
     </script>
 </body>
 </html>
+
