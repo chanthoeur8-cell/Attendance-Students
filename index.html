@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIKIDS Attendance Management System</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងវត្តមានសិស្ស MIKIDS - MIKIDS Attendance Management System</title>
     <style>
         * {
             margin: 0;
@@ -605,24 +605,25 @@
                     <h3>⚙️ សកម្មភាព</h3>
                     <div class="action-buttons">
                         <button class="btn btn-save" onclick="saveAttendance()">
-                            💾 រក្សាទុក / Save
+                            💾 Save
                         </button>
                         <button class="btn btn-telegram" onclick="sendToTelegram()">
-                            📤 ផ្ញើ Telegram
+                            📤 send to Telegram
                         </button>
                         <button class="btn btn-export" onclick="exportToExcel()">
                             📊 Export Excel
                         </button>
                     </div>
 
-                  <!-- Telegram Config -->
-                   // <div class="telegram-config">
+                    <!-- Telegram Config -->
+                    <div class="telegram-config">
                         <h4>⚙️ តំឡើង Telegram</h4>
                         <input type="text" id="botToken" placeholder="Bot Token" value="8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw">
                         <input type="text" id="chatId" placeholder="Chat ID" value="-1005090259958">
                     </div>
                 </div>
             </div>
+
             <!-- Main Content Area -->
             <div class="content-area" id="contentArea">
                 <div class="empty-state">
@@ -936,24 +937,24 @@
                 </div>
 
                 <div class="bulk-actions">
-                    <button class="btn-bulk present" onclick="markAllAs('present')">✅ សម្គាល់ទាំងអស់មានវត្តមាន</button>
-                    <button class="btn-bulk absent" onclick="markAllAs('absent')">❌ សម្គាល់ទាំងអស់អវត្តមាន</button>
-                    <button class="btn-bulk permission" onclick="markAllAs('permission')">📝 សម្គាល់ទាំងអស់ច្បាប់</button>
+                    <button class="btn-bulk present" onclick="markAllAs('present')">✅All persent</button>
+                    <button class="btn-bulk absent" onclick="markAllAs('absent')">All Absent</button>
+                    <button class="btn-bulk permission" onclick="markAllAs('permission')">All Permission</button>
                 </div>
 
                 <div class="student-list" id="studentList"></div>
 
                 <div class="summary">
                     <div class="summary-item total">
-                        <h4>សរុប / Total</h4>
+                        <h4>Total</h4>
                         <div class="count" id="totalCount">0</div>
                     </div>
                     <div class="summary-item present">
-                        <h4>មានវត្តមាន / Present</h4>
+                        <h4>✅ Present</h4>
                         <div class="count" id="presentCount">0</div>
                     </div>
                     <div class="summary-item absent">
-                        <h4>អវត្តមាន / Absent</h4>
+                        <h4>Absent</h4>
                         <div class="count" id="absentCount">0</div>
                     </div>
                     <div class="summary-item permission">
@@ -1051,7 +1052,7 @@
 
         function saveAttendance() {
             if (!currentClass) {
-                showAlert('error', '❌ សូមជ្រើសរើសថ្នាក់រៀនជាមុនសិន!');
+                showAlert('error', '❌ Select class');
                 return;
             }
             
@@ -1071,8 +1072,8 @@
         }
 
         function loadTelegramConfig() {
-            const botToken = localStorage.getItem('telegram_bot_token');
-            const chatId = localStorage.getItem('telegram_chat_id');
+            const botToken = localStorage.getItem('8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw');
+            const chatId = localStorage.getItem('-1005090259958');
             
             if (botToken) document.getElementById('botToken').value = botToken;
             if (chatId) document.getElementById('chatId').value = chatId;
@@ -1095,7 +1096,7 @@
             }
 
             const config = saveTelegramConfig();
-            if (!config.8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw || !config.-1005090259958) {
+            if (!config.botToken || !config.chatId) {
                 showAlert('error', '❌ សូមបំពេញ Bot Token និង Chat ID!');
                 return;
             }
@@ -1109,9 +1110,9 @@
                 const status = attendanceData[key] || 'present';
                 
                 if (status === 'absent') {
-                    absentList.push(`A ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
+                    absentList.push(`❌ ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
                 } else if (status === 'permission') {
-                    permissionList.push(`P ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
+                    permissionList.push(`📝 ${student.name} (អត្ត: ${student.id}, ភេទ: ${student.sex})`);
                 }
             });
 
@@ -1205,7 +1206,3 @@
     </script>
 </body>
 </html>
-
-
-
-
