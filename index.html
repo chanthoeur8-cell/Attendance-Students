@@ -979,15 +979,15 @@
                     <div class="attendance-buttons">
                         <button class="att-btn present ${status === 'present' ? 'active' : ''}" 
                                 onclick="markAttendance('${className}', '${student.id}', 'present')">
-                            ✅ មាន
+                            ✅ 
                         </button>
                         <button class="att-btn absent ${status === 'absent' ? 'active' : ''}" 
                                 onclick="markAttendance('${className}', '${student.id}', 'absent')">
-                            ❌ អវត្ត
+                            A
                         </button>
                         <button class="att-btn permission ${status === 'permission' ? 'active' : ''}" 
                                 onclick="markAttendance('${className}', '${student.id}', 'permission')">
-                            📝 ច្បាប់
+                            P
                         </button>
                     </div>
                 `;
@@ -1026,7 +1026,7 @@
             });
             
             loadClassAttendance(currentClass);
-            showAlert('success', `✅ សម្គាល់ទាំងអស់ជា${status === 'present' ? 'មានវត្តមាន' : status === 'absent' ? 'អវត្តមាន' : 'ច្បាប់'}ហើយ!`);
+            showAlert('success', `✅ សម្គាល់ទាំងអស់ជា${status === 'present' ? '✅' : status === 'absent' ? 'A' : 'P'}ហើយ!`);
         }
 
         function updateSummary() {
@@ -1095,7 +1095,7 @@
             }
 
             const config = saveTelegramConfig();
-            if (!config.botToken || !config.chatId) {
+            if (!config.8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw || !config.-1005090259958) {
                 showAlert('error', '❌ សូមបំពេញ Bot Token និង Chat ID!');
                 return;
             }
@@ -1205,5 +1205,6 @@
     </script>
 </body>
 </html>
+
 
 
