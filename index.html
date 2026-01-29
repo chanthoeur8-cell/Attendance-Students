@@ -364,7 +364,7 @@ async function sendToTelegram() {
     message += `👥 សរុប: ${total} នាក់`;
 
     // ៤. ផ្ញើទៅ Telegram API
-    const url = `https://t.me/my_students_attendance_bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     
     try {
         const response = await fetch(url, {
@@ -394,5 +394,6 @@ async function sendToTelegram() {
 
 </body>
 </html>
+
 
 
