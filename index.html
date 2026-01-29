@@ -958,7 +958,7 @@
                         <div class="count" id="absentCount">0</div>
                     </div>
                     <div class="summary-item permission">
-                        <h4>ច្បាប់ / Permission</h4>
+                        <h4>Permission</h4>
                         <div class="count" id="permissionCount">0</div>
                     </div>
                 </div>
@@ -1080,8 +1080,8 @@
         }
 
         function saveTelegramConfig() {
-            const botToken = document.getElementById('botToken').value.trim();
-            const chatId = document.getElementById('chatId').value.trim();
+            const botToken = document.getElementById('8501623225:AAGu-F_GHSQ-dLBrEME7eidOpW2yDf3qvXw').value.trim();
+            const chatId = document.getElementById('-1005090259958').value.trim();
             
             localStorage.setItem('telegram_bot_token', botToken);
             localStorage.setItem('telegram_chat_id', chatId);
@@ -1130,12 +1130,12 @@
             message += `👥 សិស្សសរុប: ${students.length} នាក់\n\n`;
 
             if (absentList.length > 0) {
-                message += `❌ សិស្សអវត្តមាន (${absentList.length} នាក់):\n`;
+                message += `A (${absentList.length} នាក់):\n`;
                 message += absentList.join('\n') + '\n\n';
             }
 
             if (permissionList.length > 0) {
-                message += `📝 សិស្សច្បាប់ (${permissionList.length} នាក់):\n`;
+                message += `P (${permissionList.length} នាក់):\n`;
                 message += permissionList.join('\n');
             }
 
@@ -1178,7 +1178,7 @@
             students.forEach((student, index) => {
                 const key = getAttendanceKey(currentClass, student.id);
                 const status = attendanceData[key] || 'present';
-                const statusKh = status === 'present' ? 'មានវត្តមាន(present)' : status === 'absent' ? 'អវត្តមាន(Absent)' : 'ច្បាប់(Permission)';
+                const statusKh = status === 'present' ? '✅' : status === 'absent' ? 'A' : 'P';
                 
                 csv += `${index + 1},${student.id},${student.name},${student.sex},${statusKh}\n`;
             });
@@ -1206,3 +1206,4 @@
     </script>
 </body>
 </html>
+
