@@ -374,47 +374,73 @@
     }
 
     async function sendToTelegram() {
-        if (!selectedClassName) return alert("⚠️ សូមជ្រើសរើសថ្នាក់!");
-        
-        const chatId = classChatIds[selectedClassName] ? classChatIds[selectedClassName].trim() : null;
-        if (!chatId) return alert("⚠️ មិនទាន់មាន Chat ID សម្រាប់ថ្នាក់នេះ!");
+    if (!selectedClassName) return alert("⚠️ សូមជ្រើសរើសថ្នាក់!");
+    
+    const chatId = classChatIds[selectedClassName] ? classChatIds[selectedClassName].trim() : null;
+    if (!chatId) return alert("⚠️ មិនទាន់មាន Chat ID សម្រាប់ថ្នាក់នេះ!");
 
-        const date = document.getElementById('attDate').value;
-        let message = `📊 **របាយការណ៍អវត្តមាន**\n🏫 ថ្នាក់: *${selectedClassName}*\n📅 ថ្ងៃទី: ${date}\n👥 សរុប: ${total} នាក់\n👩🏻 ស្រី: ${total} នាក់\n--------------------------\n`;
-        
-        let hasIssue = false;
-        document.querySelectorAll('.student-card').forEach((card) => {
-            const isP = card.querySelector('.btn-att.permission').classList.contains('active');
-            const isA = card.querySelector('.btn-att.absent').classList.contains('active');
-            if (isP || isA) {
-                hasIssue = true;
-                const name = card.getAttribute('data-name');
-                const id = card.getAttribute('data-id');
-                message += `🆔 ${id}. ${name} -> ${isP ? 'ច្បាប់' : ' ឥតច្បាប់'}\n`;
-            }
-        });
-
-        if (!hasIssue) message += "✅ សិស្សវត្តមានគ្រប់ចំនួន\n";
-        message += `--------------------------\n❌ អវត្តមាន: ${document.getElementById('cP').innerText}\n🟡 ច្បាប់: ${document.getElementById('cL').innerText}\n🔴 ឥតច្បាប់: ${document.getElementById('cA').innerText}\n`;
-
-        try {
-            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
-            });
-            const result = await response.json();
-            if (response.ok) {
-                alert("✅ បានផ្ញើទៅ Telegram រួចរាល់!");
-            } else {
-                alert(`❌ បរាជ័យ! ${result.description}`);
-                console.error("Telegram Error:", result);
-            }
-        } catch (e) { 
-            alert("❌ បញ្ហាបច្ចេកទេស! សូមពិនិត្យអ៊ីនធឺណិត។"); 
+    const date = document.getElementById('attDate').value;
+    
+    // គណនាចំនួនសរុប និងចំនួនស្រី
+    const allCards = document.querySelectorAll('.student-card');
+    const total = allCards.length;
+    let femaleCount = 0;
+    
+    allCards.forEach(card => {
+        const studentName = card.getAttribute('data-name');
+        const student = studentData[selectedClassName].find(s => s.name === studentName);
+        if (student && student.sex === 'F') femaleCount++;
+    });
+    
+    // គណនាចំនួនវត្តមាន ច្បាប់ អវត្តមាន
+    const presentCount = document.querySelectorAll('.btn-att.present.active').length;
+    const permissionCount = document.querySelectorAll('.btn-att.permission.active').length;
+    const absentCount = document.querySelectorAll('.btn-att.absent.active').length;
+    
+    let message = `📊 **របាយការណ៍វត្តមាន**\n`;
+    message += `🏫 ថ្នាក់: *${selectedClassName}*\n`;
+    message += `📅 ថ្ងៃទី: ${date}\n`;
+    message += `👥 សរុប: ${total} នាក់\n`;
+    message += `👩🏻 ស្រី: ${femaleCount} នាក់\n`;
+    message += `--------------------------\n`;
+    
+    let hasIssue = false;
+    allCards.forEach((card) => {
+        const isP = card.querySelector('.btn-att.permission').classList.contains('active');
+        const isA = card.querySelector('.btn-att.absent').classList.contains('active');
+        if (isP || isA) {
+            hasIssue = true;
+            const name = card.getAttribute('data-name');
+            const id = card.getAttribute('data-id');
+            message += `🆔 ${id}. ${name} -> ${isP ? '🟡 ច្បាប់' : '🔴 ឥតច្បាប់'}\n`;
         }
-    }
+    });
 
+    if (!hasIssue) message += "✅ សិស្សវត្តមានគ្រប់ចំនួន\n";
+    
+    message += `--------------------------\n`;
+    message += `✅ វត្តមាន: ${presentCount} នាក់\n`;
+    message += `🟡 ច្បាប់: ${permissionCount} នាក់\n`;
+    message += `🔴 ឥតច្បាប់: ${absentCount} នាក់\n`;
+
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
+        });
+        const result = await response.json();
+        if (response.ok) {
+            alert("✅ បានផ្ញើទៅ Telegram រួចរាល់!");
+        } else {
+            alert(`❌ បរាជ័យ! ${result.description}`);
+            console.error("Telegram Error:", result);
+        }
+    } catch (e) { 
+        alert("❌ បញ្ហាបច្ចេកទេស! សូមពិនិត្យអ៊ីនធឺណិត។");
+        console.error("Error:", e);
+    }
+}
     function exportToExcel() {
         let csv = "\uFEFFID,StudentName,Status\n";
         document.querySelectorAll('.student-card').forEach((card) => {
