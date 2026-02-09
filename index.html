@@ -367,10 +367,16 @@
     }
 
     function calculateSummary() {
-        document.getElementById('cP').innerText = document.querySelectorAll('.btn-att.present.active').length;
-        document.getElementById('cL').innerText = document.querySelectorAll('.btn-att.permission.active').length;
-        document.getElementById('cA').innerText = document.querySelectorAll('.btn-att.absent.active').length;
-        document.getElementById('cT').innerText = document.querySelectorAll('.student-card').length;
+        // រាប់ចំនួនអ្នកច្បាប់ (P) និង អវត្តមាន (A) ដែលបានចុច
+        const permissionCount = document.querySelectorAll('.btn-att.permission.active').length;
+        const absentCount = document.querySelectorAll('.btn-att.absent.active').length;
+        
+        // រាប់ចំនួនសិស្សសរុបក្នុងថ្នាក់
+        const totalStudents = document.querySelectorAll('.student-card').length;
+        
+        // គណនាវត្តមានស្វ័យប្រវត្តិ (សរុប - ច្បាប់ - អវត្តមាន)
+        const presentCount = totalStudents - (permissionCount + absentCount);
+
     }
 
     async function sendToTelegram() {
@@ -459,3 +465,4 @@
 
 </body>
 </html>
+
