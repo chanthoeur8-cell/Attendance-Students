@@ -380,7 +380,7 @@
         if (!chatId) return alert("⚠️ មិនទាន់មាន Chat ID សម្រាប់ថ្នាក់នេះ!");
 
         const date = document.getElementById('attDate').value;
-        let message = `📊 **របាយការណ៍អវត្តមាន**\n🏫 ថ្នាក់: *${selectedClassName}*\n📅 ថ្ងៃទី: ${date}\n--------------------------\n`;
+        let message = `📊 **របាយការណ៍អវត្តមាន**\n🏫 ថ្នាក់: *${selectedClassName}*\n📅 ថ្ងៃទី: ${date}\n👥 សរុប: ${total} នាក់\n👩🏻 ស្រី: ${total} នាក់\n--------------------------\n`;
         
         let hasIssue = false;
         document.querySelectorAll('.student-card').forEach((card) => {
@@ -390,12 +390,12 @@
                 hasIssue = true;
                 const name = card.getAttribute('data-name');
                 const id = card.getAttribute('data-id');
-                message += `🆔 ${id}. ${name} -> ${isP ? '✍️ ច្បាប់' : '❌ អវត្តមាន'}\n`;
+                message += `🆔 ${id}. ${name} -> ${isP ? 'ច្បាប់' : ' ឥតច្បាប់'}\n`;
             }
         });
 
         if (!hasIssue) message += "✅ សិស្សវត្តមានគ្រប់ចំនួន\n";
-        message += `--------------------------\n🟢 មក: ${document.getElementById('cP').innerText}\n🟡 ច្បាប់: ${document.getElementById('cL').innerText}\n🔴 អវត្តមាន: ${document.getElementById('cA').innerText}\n👥 សរុប: ${document.getElementById('cT').innerText}`;
+        message += `--------------------------\n❌ អវត្តមាន: ${document.getElementById('cP').innerText}\n🟡 ច្បាប់: ${document.getElementById('cL').innerText}\n🔴 ឥតច្បាប់: ${document.getElementById('cA').innerText}\n`;
 
         try {
             const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
