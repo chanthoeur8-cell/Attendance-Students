@@ -366,18 +366,18 @@
         calculateSummary();
     }
 
-    function calculateSummary() {
-        // រាប់ចំនួនអ្នកច្បាប់ (P) និង អវត្តមាន (A) ដែលបានចុច
-        const permissionCount = document.querySelectorAll('.btn-att.permission.active').length;
-        const absentCount = document.querySelectorAll('.btn-att.absent.active').length;
-        
-        // រាប់ចំនួនសិស្សសរុបក្នុងថ្នាក់
-        const totalStudents = document.querySelectorAll('.student-card').length;
-        
-        // គណនាវត្តមានស្វ័យប្រវត្តិ (សរុប - ច្បាប់ - អវត្តមាន)
-        const presentCount = totalStudents - (permissionCount + absentCount);
-
-    }
+   function calculateSummary() {
+    const permissionCount = document.querySelectorAll('.btn-att.permission.active').length;
+    const absentCount = document.querySelectorAll('.btn-att.absent.active').length;
+    const totalStudents = document.querySelectorAll('.student-card').length;
+    const presentCount = totalStudents - (permissionCount + absentCount);
+    
+    // ✅ UPDATE UI នៅទីនេះ
+    document.getElementById('cP').innerText = presentCount;
+    document.getElementById('cL').innerText = permissionCount;
+    document.getElementById('cA').innerText = absentCount;
+    document.getElementById('cT').innerText = totalStudents;
+}
 
     async function sendToTelegram() {
     if (!selectedClassName) return alert("⚠️ សូមជ្រើសរើសថ្នាក់!");
@@ -387,7 +387,6 @@
 
     const date = document.getElementById('attDate').value;
     
-    // គណនាចំនួនសរុប និងចំនួនស្រី
     const allCards = document.querySelectorAll('.student-card');
     const total = allCards.length;
     let femaleCount = 0;
@@ -398,10 +397,10 @@
         if (student && student.sex === 'F') femaleCount++;
     });
     
-    // គណនាចំនួនវត្តមាន ច្បាប់ អវត្តមាន
-    const presentCount = document.querySelectorAll('.btn-att.present.active').length;
     const permissionCount = document.querySelectorAll('.btn-att.permission.active').length;
     const absentCount = document.querySelectorAll('.btn-att.absent.active').length;
+    const totalAbsent = permissionCount + absentCount; // ឈប់សរុប
+    const presentCount = total - totalAbsent; // វត្តមានពិត
     
     let message = `📊 **របាយការណ៍វត្តមាន**\n`;
     message += `🏫 ថ្នាក់: *${selectedClassName}*\n`;
@@ -412,7 +411,7 @@
     
     let hasIssue = false;
     allCards.forEach((card) => {
-        const isP = card.querySelector('.btn-att.permission').classList.contains('active');
+        const isP = card.querySelector('.btn-att.permission.active').classList.contains('active');
         const isA = card.querySelector('.btn-att.absent').classList.contains('active');
         if (isP || isA) {
             hasIssue = true;
@@ -425,9 +424,9 @@
     if (!hasIssue) message += "✅ សិស្សវត្តមានគ្រប់ចំនួន\n";
     
     message += `--------------------------\n`;
-    message += `✅ វត្តមាន: ${presentCount} នាក់\n`;
-    message += `🟡 ច្បាប់: ${permissionCount} នាក់\n`;
-    message += `🔴 ឥតច្បាប់: ${absentCount} នាក់\n`;
+    message += `❌ អវត្តមានសរុប: ${totalAbsent} នាក់\n`;  // ✅ កែនៅទីនេះ
+    message += `    🟡 ច្បាប់: ${permissionCount} នាក់\n`;
+    message += `    🔴 ឥតច្បាប់: ${absentCount} នាក់\n`;
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -465,4 +464,3 @@
 
 </body>
 </html>
-
