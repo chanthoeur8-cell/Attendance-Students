@@ -386,7 +386,6 @@
     if (!chatId) return alert("⚠️ មិនទាន់មាន Chat ID សម្រាប់ថ្នាក់នេះ!");
 
     const date = document.getElementById('attDate').value;
-    
     const allCards = document.querySelectorAll('.student-card');
     const total = allCards.length;
     let femaleCount = 0;
@@ -399,67 +398,54 @@
     
     const permissionCount = document.querySelectorAll('.btn-att.permission.active').length;
     const absentCount = document.querySelectorAll('.btn-att.absent.active').length;
-    const totalAbsent = permissionCount + absentCount; // ឈប់សរុប
-    const presentCount = total - totalAbsent; // វត្តមានពិត
+    const totalAbsent = permissionCount + absentCount;
     
-    let message = `📊 **របាយការណ៍វត្តមាន**\n`;
-    message += `🏫 ថ្នាក់: *${selectedClassName}*\n`;
+    // ប្តូរមកប្រើ HTML Tags វិញដើម្បីភាពច្បាស់លាស់
+    let message = `<b>📊 របាយការណ៍វត្តមាន</b>\n`;
+    message += `🏫 ថ្នាក់: <b>${selectedClassName}</b>\n`;
     message += `📅 ថ្ងៃទី: ${date}\n`;
-    message += `👥 សរុប: ${total} នាក់\n`;
-    message += `👩🏻 ស្រី: ${femaleCount} នាក់\n`;
+    message += `👥 សរុប: ${total} នាក់ (ស្រី: ${femaleCount})\n`;
     message += `--------------------------\n`;
     
     let hasIssue = false;
     allCards.forEach((card) => {
-        const isP = card.querySelector('.btn-att.permission.active').classList.contains('active');
+        const isP = card.querySelector('.btn-att.permission').classList.contains('active');
         const isA = card.querySelector('.btn-att.absent').classList.contains('active');
         if (isP || isA) {
             hasIssue = true;
             const name = card.getAttribute('data-name');
             const id = card.getAttribute('data-id');
-            message += `🆔 ${id}. ${name} -> ${isP ? '🟡 ច្បាប់' : '🔴 ឥតច្បាប់'}\n`;
+            message += `🆔 ${id}. ${name} -> ${isP ? '🟡 ច្បាប់' : '🔴 អវត្តមាន'}\n`;
         }
     });
 
     if (!hasIssue) message += "✅ សិស្សវត្តមានគ្រប់ចំនួន\n";
     
     message += `--------------------------\n`;
-    message += `❌ អវត្តមានសរុប: ${totalAbsent} នាក់\n`;  // ✅ កែនៅទីនេះ
-    message += `    🟡 ច្បាប់: ${permissionCount} នាក់\n`;
-    message += `    🔴 ឥតច្បាប់: ${absentCount} នាក់\n`;
+    message += `❌ អវត្តមានសរុប: <b>${totalAbsent}</b> នាក់\n`;
+    message += `   🟡 ច្បាប់: ${permissionCount} នាក់\n`;
+    message += `   🔴 ឥតច្បាប់: ${absentCount} នាក់`;
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
+            body: JSON.stringify({ 
+                chat_id: chatId, 
+                text: message, 
+                parse_mode: 'HTML' // កែពី Markdown មក HTML
+            })
         });
         const result = await response.json();
         if (response.ok) {
             alert("✅ បានផ្ញើទៅ Telegram រួចរាល់!");
         } else {
             alert(`❌ បរាជ័យ! ${result.description}`);
-            console.error("Telegram Error:", result);
         }
     } catch (e) { 
         alert("❌ បញ្ហាបច្ចេកទេស! សូមពិនិត្យអ៊ីនធឺណិត។");
-        console.error("Error:", e);
     }
 }
-    function exportToExcel() {
-        let csv = "\uFEFFID,StudentName,Status\n";
-        document.querySelectorAll('.student-card').forEach((card) => {
-            let status = "P";
-            if(card.querySelector('.btn-att.permission').classList.contains('active')) status = "L";
-            if(card.querySelector('.btn-att.absent').classList.contains('active')) status = "A";
-            csv += `${card.getAttribute('data-id')},${card.getAttribute('data-name')},${status}\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `Attendance_${selectedClassName}.csv`;
-        link.click();
-    }
 </script>
 
 </body>
