@@ -387,14 +387,6 @@
 
     const date = document.getElementById('attDate').value;
     const allCards = document.querySelectorAll('.student-card');
-    const total = allCards.length;
-    let femaleCount = 0;
-    
-    allCards.forEach(card => {
-        const studentName = card.getAttribute('data-name');
-        const student = studentData[selectedClassName].find(s => s.name === studentName);
-        if (student && student.sex === 'F') femaleCount++;
-    });
     
     const permissionCount = document.querySelectorAll('.btn-att.permission.active').length;
     const absentCount = document.querySelectorAll('.btn-att.absent.active').length;
@@ -404,7 +396,6 @@
     let message = `<b>📊 របាយការណ៍វត្តមាន</b>\n`;
     message += `🏫 ថ្នាក់: <b>${selectedClassName}</b>\n`;
     message += `📅 ថ្ងៃទី: ${date}\n`;
-    message += `👥 សរុប: ${total} នាក់ (ស្រី: ${femaleCount})\n`;
     message += `--------------------------\n`;
     
     let hasIssue = false;
@@ -450,3 +441,4 @@
 
 </body>
 </html>
+
